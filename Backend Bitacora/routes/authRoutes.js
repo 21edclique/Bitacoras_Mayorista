@@ -1,8 +1,8 @@
+
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const connection = require('../db'); // Importa tu conexión a la base de datos
-
 // Función para verificar el token de acceso
 function authenticateToken(req, res, next) {
     const authHeader = req.headers.authorization;
