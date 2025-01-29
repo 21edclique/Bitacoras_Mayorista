@@ -58,5 +58,30 @@ router.post('/login', (req, res) => {
     });
 });
 
+
+
+const logoutService = async (res) => {
+  try {
+    res.cookie("jwt", "", { maxAge: 0 });
+    return {
+      status: 200,
+      message: "Logout exitoso"
+    };
+  } catch {
+    return {
+      status: 500,
+      message: "Error al cerrar sesión"
+    };
+  }
+};
+
+
+
+router.post('/logout', async (req, res) => {
+  const result = await logoutService(res);
+  res.status(result.status).json({ message: result.message });
+});
+module.exports.logoutService = logoutService;
+
 module.exports = router;
 module.exports.authenticateToken = authenticateToken;

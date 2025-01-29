@@ -54,4 +54,7 @@ router.get('/usuario', authenticateToken.authenticateToken, (req, res) => {
     });
 });
 
+
+
+
 module.exports = router;

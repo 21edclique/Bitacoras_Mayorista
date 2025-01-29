@@ -35,8 +35,9 @@ export default function useSignup() {
         }
 
         // Guardamos el token y los datos del usuario en localStorage
-        localStorage.setItem("chaski-token", token); // Guarda el token
-        localStorage.setItem("chaski-user", JSON.stringify(userData)); // Guarda los datos del usuario
+        localStorage.setItem("epema-token", token); // Guarda el token
+        console.log("Token guardado en localStorage:", token);
+        localStorage.setItem("epema-user", JSON.stringify(userData)); // Guarda los datos del usuario
 
         // Actualizamos el contexto con los datos del usuario
         setAuthUser(userData);
@@ -52,6 +53,8 @@ export default function useSignup() {
       setLoading(false); // Restablecemos el estado de carga
     }
   };
+
+
 
   return { loading, login };
 }

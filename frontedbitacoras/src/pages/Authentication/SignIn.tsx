@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 //my imports
-import ChaskiLogoB from '../../images/ep-ema-black_1.svg';
+import ChaskiLogoB from '../../images/logo-epema.svg';
 import { FaEye, FaEyeSlash, FaRegUser } from 'react-icons/fa';
 import useSignup from '../../hooks/useSignup';
 import { UserSignUpT } from '../../types';

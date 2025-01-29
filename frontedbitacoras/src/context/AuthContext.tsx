@@ -16,7 +16,7 @@ export const useAuthContext=()=>{
 
 //Proporciono el contexto, envolver a los componentes que necesiten acceder a este contexto
 export const AuthContextProvider = ({ children }: AuthContextProviderProps) => {
-    const [authUser, setAuthUser] = useState<UserLocalStorageT>(JSON.parse(localStorage.getItem('chaski-log') as string) || null);
+    const [authUser, setAuthUser] = useState<UserLocalStorageT>(JSON.parse(localStorage.getItem('epema-log') as string) || null);
     return <AuthContext.Provider value={{ authUser, setAuthUser }}>
         {children}
     </AuthContext.Provider>

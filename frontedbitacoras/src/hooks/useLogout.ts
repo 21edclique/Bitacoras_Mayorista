@@ -11,7 +11,7 @@ export const useLogout = () => {
     const logout = async () => {
         setLoading(true);
         try{
-            const response:Response = await fetch(`${API_BASE_URL}auth/logout`,{
+            const response:Response = await fetch(`${API_BASE_URL}logout`,{
                 method:'GET',
                 headers:{
                     'Content-Type':'application/json',
