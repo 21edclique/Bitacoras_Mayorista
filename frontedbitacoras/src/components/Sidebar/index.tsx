@@ -2,8 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import SidebarLinkGroup from './SidebarLinkGroup';
 import ChaskiLogo from '../../images/ep-ema-white.png';
-import { IoIosArrowDown } from "react-icons/io";
-import { FaKey } from "react-icons/fa";
+import { FcBusinessman } from 'react-icons/fc';
+import { FcKindle } from 'react-icons/fc';
+import { FcCollaboration } from 'react-icons/fc';
+import { FcFile } from 'react-icons/fc';
+import { TiDocumentText } from "react-icons/ti";
+import { FcMenu } from "react-icons/fc";
+import { FcInspection } from 'react-icons/fc';
+import { IoIosArrowDown } from 'react-icons/io';
+import { FaKey } from 'react-icons/fa';
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -19,7 +26,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 
   const storedSidebarExpanded = localStorage.getItem('sidebar-expanded');
   const [sidebarExpanded, setSidebarExpanded] = useState(
-    storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true'
+    storedSidebarExpanded === null ? false : storedSidebarExpanded === 'true',
   );
 
   // close on click outside
@@ -60,13 +67,18 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   return (
     <aside
       ref={sidebar}
-      className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-[#791812] duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+      className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-[#791812] duration-300 ease-linear dark:bg-[#791812] lg:static lg:translate-x-0 ${
+        sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+      }`}
     >
       {/* <!-- SIDEBAR HEADER --> */}
       <div className="flex items-center justify-between">
         <NavLink to="/register/cooperativesList">
-          <img src={ChaskiLogo} alt="Logo" className='flex item-center justify-between' />
+          <img
+            src={ChaskiLogo}
+            alt="Logo"
+            className="flex item-center justify-between"
+          />
         </NavLink>
 
         <button
@@ -99,19 +111,16 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
           {/* <!-- Menu Group --> */}
           <div>
             <h3 className="mb-4 ml-4 text-sm font-semibold text-bodydark2">
-              MENU
+              {/* MENU */}
             </h3>
             <ul className="mb-6 flex flex-col gap-1.5">
               {/* <!-- Menu Item Dashboard --> */}
               <SidebarLinkGroup
-                activeCondition={
-                  pathname === '/register/cooperativesList'
-                }
+                activeCondition={pathname === '/register/cooperativesList'}
               >
                 {(handleClick, open) => {
                   return (
                     <React.Fragment>
-                     
                       {/* <!-- Dropdown Menu Start --> */}
                       {/* <div
                         className={`translate transform overflow-hidden ${!open && 'hidden'
@@ -139,9 +148,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               {/* <!-- Menu Item Dashboard --> */}
 
               {/* <!-- Menu Item Registros --> */}
-              
-            
-              
+
               {/* <!-- Menu Item Administrators --> */}
               <SidebarLinkGroup
                 activeCondition={
@@ -153,9 +160,10 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     <React.Fragment>
                       <NavLink
                         to="#"
-                        className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-bg-[#791812] dark:hover:bg-meta-4 ${(pathname === '/auth' || pathname.includes('auth')) &&
-                          'bg-graydark dark:bg-meta-4'
-                          }`}
+                        className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-bg-[#791812] dark:hover:bg-meta-4 ${
+                          (pathname === '/auth' || pathname.includes('auth')) &&
+                          'bg-[#791812] dark:bg-meta-4'
+                        }`}
                         onClick={(e) => {
                           e.preventDefault();
                           sidebarExpanded
@@ -163,17 +171,20 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                             : setSidebarExpanded(true);
                         }}
                       >
-                        <FaKey />
-                        Administrador
-                        <IoIosArrowDown className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${open && 'rotate-180'}`} />
+                        <TiDocumentText />
+                       MENU
+                        <IoIosArrowDown
+                          className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${
+                            open && 'rotate-180'
+                          }`}
+                        />
                       </NavLink>
                       {/* <!-- Dropdown Menu Start --> */}
-                    
-                    
-                      
+
                       <div
-                        className={`translate transform overflow-hidden ${!open && 'hidden'
-                          }`}
+                        className={`translate transform overflow-hidden ${
+                          !open && 'hidden'
+                        }`}
                       >
                         <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
                           <li>
@@ -184,16 +195,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 (isActive && '!text-white')
                               }
                             >
+                              <FcKindle />
                               Bitácoras
                             </NavLink>
                           </li>
                         </ul>
                       </div>
 
-
                       <div
-                        className={`translate transform overflow-hidden ${!open && 'hidden'
-                          }`}
+                        className={`translate transform overflow-hidden ${
+                          !open && 'hidden'
+                        }`}
                       >
                         <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
                           <li>
@@ -204,6 +216,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 (isActive && '!text-white')
                               }
                             >
+                              <FcBusinessman />
                               Usuarios
                             </NavLink>
                           </li>
@@ -211,8 +224,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       </div>
 
                       <div
-                        className={`translate transform overflow-hidden ${!open && 'hidden'
-                          }`}
+                        className={`translate transform overflow-hidden ${
+                          !open && 'hidden'
+                        }`}
                       >
                         <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
                           <li>
@@ -223,14 +237,16 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 (isActive && '!text-white')
                               }
                             >
+                              <FcCollaboration />
                               Comerciante
                             </NavLink>
                           </li>
                         </ul>
                       </div>
                       <div
-                        className={`translate transform overflow-hidden ${!open && 'hidden'
-                          }`}
+                        className={`translate transform overflow-hidden ${
+                          !open && 'hidden'
+                        }`}
                       >
                         <ul className="mt-4 mb-5.5 flex flex-col gap-2.5 pl-6">
                           <li>
@@ -241,6 +257,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 (isActive && '!text-white')
                               }
                             >
+                              <FcFile />
                               Informe Bitácora
                             </NavLink>
                           </li>
@@ -250,10 +267,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                     </React.Fragment>
                   );
                 }}
-
-                
               </SidebarLinkGroup>
-              
             </ul>
           </div>
         </nav>

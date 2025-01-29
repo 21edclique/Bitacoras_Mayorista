@@ -9,35 +9,36 @@ export default function useBitacora() {
   const [bitacoras, setBitacoras] = useState<TypebitacoraT[]>([]);
 
   // Obtener todas las bitácoras
-const fetchBitacoras = async () => {
+  const fetchBitacoras = async () => {
     setLoading(true);
     const token = localStorage.getItem("token");
-    console.log("Token:", token);
     try {
-        const response = await fetch(`${API_BASE_URL}bitacora`, {
-            method: "GET",
-            headers: {
-                Authorization: localStorage.getItem("epema-token")  || "",
-            },
-        });
-        if (!token) {
-            throw new Error("Token no encontrado");
-        }
-        const data = await response.json();
-
-        if (response.ok) {
-            setBitacoras(data);
-        } else {
-            throw new Error(data.error || "Error al obtener las bitácoras");
-        }
+      const response = await fetch(`${API_BASE_URL}bitacora`, {
+        method: "GET",
+        headers: {
+          Authorization: token || "",
+        },
+      });
+      if (!token) {
+        throw new Error("Token no encontrado");
+      }
+      const data = await response.json();
+  
+      if (response.ok) {
+        setBitacoras(data); // Actualiza el estado
+        return data; // Devuelve los datos
+      } else {
+        throw new Error(data.error || "Error al obtener las bitácoras");
+      }
     } catch (error) {
-        console.error("Error al obtener bitácoras:", error);
-        toast.error(verifyError(error));
+      console.error("Error al obtener bitácoras:", error);
+      toast.error(verifyError(error));
+      return null; // Devuelve null en caso de error
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
-};
-
+  };
+  
   // Agregar una nueva bitácora
   const addBitacora = async (bitacora: Omit<TypebitacoraT, "id_bitacora">) => {
     setLoading(true);

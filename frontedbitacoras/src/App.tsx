@@ -61,7 +61,7 @@ function App() {
             <Route
               path='/auth/signin'
               element={
-                <ProtectedRoute requiredRole={['superAdmin']}>
+                <ProtectedRoute requiredRole={['Administrador']}>
                   <>
                     <PageTitle title="Routes  | ChaskiPass" />
                     <CooperativesList />
@@ -74,7 +74,7 @@ function App() {
               path="/auth/signup"
               element={
 
-                <ProtectedRoute requiredRole={['superAdmin']}>
+                <ProtectedRoute requiredRole={['Administrador']}>
                   <>
                     <PageTitle title="Cooperatives | ChaskiPass" />
                     <Cooperatives/>
@@ -85,7 +85,7 @@ function App() {
             <Route
               path="/auth/signup"
               element={
-                <ProtectedRoute requiredRole={['superAdmin']}>
+                <ProtectedRoute requiredRole={['Administrador']}>
                   <>
                     <PageTitle title="Signin | ChaskiPass" />
                     <SignUp />
@@ -97,7 +97,7 @@ function App() {
             <Route
               path="/register/cooperativesList"
               element={
-                <ProtectedRoute requiredRole={['superAdmin']}>
+                <ProtectedRoute requiredRole={['Administrador']}>
                   <>
                     <PageTitle title="Routes | ChaskiPass" />
                     <CooperativesList />

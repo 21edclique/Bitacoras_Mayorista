@@ -102,7 +102,7 @@ const SignUp: React.FC = () => {
           <div className="w-full p-2 sm:p-10.5 xl:p-17.5">
             <span className="mb-1.5 block font-medium">Registro</span>
             <h2 className="mb-9 text-2xl font-bold text-black dark:text-white sm:text-title-xl2">
-              ChaskiPass - Registro de Usuarios
+              EP-EMA - Registro de Usuarios
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-5.5 flex flex-col gap-5.5 sm:flex-row">

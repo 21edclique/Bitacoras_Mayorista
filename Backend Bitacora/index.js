@@ -5,7 +5,7 @@ const port = 5001;
 
 // Configuración del CORS
 const corsOptions = {
-  origin: 'http://localhost:5175/auth/signin', // Cambia esto al origen de tu frontend
+  origin: 'http://localhost:5173/auth/signin', // Cambia esto al origen de tu frontend
   credentials: true, // Permite el envío de cookies y credenciales
 };
 
