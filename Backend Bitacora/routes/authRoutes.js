@@ -8,6 +8,7 @@ function authenticateToken(req, res, next) {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(' ')[1];
   
+
     if (token == null) {
       return res.sendStatus(401);
     }
@@ -24,6 +25,7 @@ function authenticateToken(req, res, next) {
     });
   }
 
+  
 router.post('/login', (req, res) => {
     const { username, password } = req.body;
     const query = 'SELECT id_usuario, cedula, usuario, nombres, direccion, telefono, estado, id_rol_per, cargo FROM usuario WHERE usuario = ? AND contrasenia = ? AND estado = "A"';
