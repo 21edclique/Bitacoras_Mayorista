@@ -2,27 +2,9 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const connection = require('../db/connection'); // Cambia según la ubicación de tu conexión
+const authenticateToken = require('../middlewares/authMiddleware');
 
-// Clave secreta
 const secretKey = 'MERCADOMAYORISTA_API_KEY_2023_TIC';
-
-// Middleware para verificar el token de acceso
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(' ')[1];
-
-  if (!token) {
-    return res.sendStatus(401); // No autorizado
-  }
-
-  jwt.verify(token, secretKey, (err, user) => {
-    if (err) {
-      return res.sendStatus(403); // Prohibido
-    }
-    req.user = user;
-    next();
-  });
-}
 
 // Ruta para iniciar sesión
 router.post('/login', (req, res) => {
