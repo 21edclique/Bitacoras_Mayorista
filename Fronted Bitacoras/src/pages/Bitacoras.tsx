@@ -53,13 +53,13 @@ const Bitacoras = () => {
 
   if (loading) return (
     <div className="flex justify-center items-center min-h-screen">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 dark:border-blue-400"></div>
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
     </div>
   )
 
   if (error) return (
     <div className="flex justify-center items-center min-h-screen">
-      <div className="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg" role="alert">
+      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg">
         <strong className="font-bold">Error: </strong>
         <span className="block sm:inline">{error}</span>
       </div>
@@ -90,64 +90,70 @@ const Bitacoras = () => {
                 handleAddBitacora()
                 setShowForm(true)
               }}
-              className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 
-                       text-white px-4 py-2 rounded-lg transition-colors duration-300 
-                       flex items-center gap-2 shadow-md hover:shadow-lg"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
             >
               <Plus size={20} />
               <span className="hidden sm:inline">Agregar Bitácora</span>
             </button>
           </div>
 
-          <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
-            <div className="overflow-x-auto">
-              <table className="min-w-full bg-white dark:bg-gray-800">
-                <thead className="bg-gray-50 dark:bg-gray-700">
-                  <tr>
-                    {Object.entries({
-                      'id_bitacora': 'Bitácora',
-                      'fecha': 'Fecha',
-                      'nombres': 'Usuario',
-                      'hora': 'Hora',
-                      'nombre': 'Nave',
-                      'camara': 'Cámara',
-                      'novedad': 'Novedad',
-                      'resultado': 'Resultado',
-                      'referencia': 'Referencia',
-                      'turno': 'Turno'
-                    }).map(([key, label]) => (
-                      <th key={key} className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-200 uppercase tracking-wider">
-                        {label}
-                      </th>
-                    ))}
-                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-gray-200 uppercase tracking-wider">
-                      Acciones
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                  {currentItems.map((bitacora) => (
-                    <tr key={bitacora.id_bitacora} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
-                      {Object.keys(bitacora).map((key) => (
-                        <td key={key} className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
-                          {bitacora[key]}
-                        </td>
-                      ))}
-                      <td className="px-4 py-3 whitespace-nowrap text-right">
-                        <div className="flex justify-end gap-2">
-                          <IconButton onClick={() => handleEdit(bitacora)} color="edit" ariaLabel="Editar">
-                            <Edit2 size={18} />
-                          </IconButton>
-                          <IconButton onClick={() => handleDelete(bitacora.id_bitacora)} color="delete" ariaLabel="Eliminar">
-                            <Trash2 size={18} />
-                          </IconButton>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          <div className="grid gap-4">
+            {currentItems.map((bitacora) => (
+              <div key={bitacora.id_bitacora} className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div>
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">ID:</span>
+                    <span className="ml-2 text-gray-900 dark:text-gray-100">{bitacora.id_bitacora}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">Fecha:</span>
+                    <span className="ml-2 text-gray-900 dark:text-gray-100">{bitacora.fecha}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">Usuario:</span>
+                    <span className="ml-2 text-gray-900 dark:text-gray-100">{bitacora.nombres}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">Hora:</span>
+                    <span className="ml-2 text-gray-900 dark:text-gray-100">{bitacora.hora}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">Nave:</span>
+                    <span className="ml-2 text-gray-900 dark:text-gray-100">{bitacora.nombre}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">Cámara:</span>
+                    <span className="ml-2 text-gray-900 dark:text-gray-100">{bitacora.camara}</span>
+                  </div>
+                  <div className="md:col-span-2 lg:col-span-3">
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">Novedad:</span>
+                    <span className="ml-2 text-gray-900 dark:text-gray-100">{bitacora.novedad}</span>
+                  </div>
+                  <div className="md:col-span-2 lg:col-span-3">
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">Resultado:</span>
+                    <span className="ml-2 text-gray-900 dark:text-gray-100">{bitacora.resultado}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">Referencia:</span>
+                    <span className="ml-2 text-gray-900 dark:text-gray-100">{bitacora.referencia}</span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">Turno:</span>
+                    <span className="ml-2 text-gray-900 dark:text-gray-100">{bitacora.turno}</span>
+                  </div>
+                  <div className="flex justify-end md:col-span-2 lg:col-span-1">
+                    <div className="flex gap-2">
+                      <IconButton onClick={() => handleEdit(bitacora)} color="edit" ariaLabel="Editar">
+                        <Edit2 size={18} />
+                      </IconButton>
+                      <IconButton onClick={() => handleDelete(bitacora.id_bitacora)} color="delete" ariaLabel="Eliminar">
+                        <Trash2 size={18} />
+                      </IconButton>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
 
           <div className="flex items-center justify-between mt-6">
@@ -160,7 +166,7 @@ const Bitacoras = () => {
                 onClick={() => paginate(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
                 className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 
-                         disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
+                         disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronLeft size={20} />
               </button>
@@ -169,10 +175,11 @@ const Bitacoras = () => {
                 <button
                   key={page}
                   onClick={() => paginate(page)}
-                  className={`px-4 py-2 rounded-lg transition-colors duration-300 
-                    ${currentPage === page 
+                  className={`px-4 py-2 rounded-lg ${
+                    currentPage === page 
                       ? 'bg-blue-500 text-white' 
-                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                  }`}
                 >
                   {page}
                 </button>
@@ -182,7 +189,7 @@ const Bitacoras = () => {
                 onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
                 disabled={currentPage === totalPages}
                 className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 
-                         disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
+                         disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <ChevronRight size={20} />
               </button>

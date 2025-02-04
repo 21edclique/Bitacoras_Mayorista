@@ -7,7 +7,7 @@ export const useBitacoras = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage] = useState<number>(14);
+  const [itemsPerPage] = useState<number>(3);
   const [showForm, setShowForm] = useState<boolean>(false);
   const [editMode, setEditMode] = useState<boolean>(false);
   const [currentBitacora, setCurrentBitacora] = useState<any>(null);
