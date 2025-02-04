@@ -1,37 +1,35 @@
 import React from 'react'
 import { useBitacoras } from '../hooks/useBitacoras'
 import ModalBitacoras from '../Mod/ModalBitacoras'
-import { ChevronLeft, ChevronRight, Plus, Pencil, Trash2 } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Plus, Edit2, Trash2 } from 'lucide-react'
 
-type IconButtonProps = {
-  children: React.ReactNode
-  onClick: () => void
-  color?: 'default' | 'edit' | 'delete'
-  ariaLabel: string
-}
-
-const IconButton: React.FC<IconButtonProps> = ({
+const IconButton = ({
   children,
   onClick,
   color = 'default',
-  ariaLabel,
+  ariaLabel
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  color?: 'default' | 'edit' | 'delete';
+  ariaLabel: string;
 }) => {
-  const colorStyles: { [key in 'default' | 'edit' | 'delete']: string } = {
-    default: 'text-gray-600 hover:bg-gray-200',
-    edit: 'text-yellow-600 hover:bg-yellow-100',
-    delete: 'text-red-600 hover:bg-red-100',
-  }
+  const colorStyles = {
+    default: 'text-gray-600 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700',
+    edit: 'text-yellow-600 hover:bg-yellow-100 dark:text-yellow-400 dark:hover:bg-yellow-900',
+    delete: 'text-red-600 hover:bg-red-100 dark:text-red-400 dark:hover:bg-red-900'
+  };
 
   return (
     <button
       onClick={onClick}
       aria-label={ariaLabel}
-      className={`p-2 rounded-full transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-opacity-50 ${colorStyles[color]}`}
+      className={`p-2 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-opacity-50 ${colorStyles[color]}`}
     >
       {children}
     </button>
-  )
-}
+  );
+};
 
 const Bitacoras = () => {
   const {
@@ -55,13 +53,13 @@ const Bitacoras = () => {
 
   if (loading) return (
     <div className="flex justify-center items-center min-h-screen">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 dark:border-blue-400"></div>
     </div>
   )
-  
+
   if (error) return (
     <div className="flex justify-center items-center min-h-screen">
-      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+      <div className="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg" role="alert">
         <strong className="font-bold">Error: </strong>
         <span className="block sm:inline">{error}</span>
       </div>
@@ -69,86 +67,79 @@ const Bitacoras = () => {
   )
 
   const totalPages = Math.ceil(bitacoras.length / itemsPerPage)
-
-  const handlePrevPage = () => currentPage > 1 && paginate(currentPage - 1)
-  const handleNextPage = () => currentPage < totalPages && paginate(currentPage + 1)
-
   const getPageRange = () => {
-    const range = []
     const maxPagesToShow = window.innerWidth < 640 ? 3 : 5
     let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2))
-    let endPage = startPage + maxPagesToShow - 1
-
-    if (endPage > totalPages) {
-      endPage = totalPages
+    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1)
+    
+    if (endPage - startPage + 1 < maxPagesToShow) {
       startPage = Math.max(1, endPage - maxPagesToShow + 1)
     }
-
-    for (let i = startPage; i <= endPage; i++) {
-      range.push(i)
-    }
-
-    return range
+    
+    return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i)
   }
 
   return (
-    <div className="container mx-auto px-4 py-6">
-      <div className="bg-white rounded-lg shadow-lg">
+    <div className="container mx-auto p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg">
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-800">Bitácoras</h1>
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Bitácoras</h1>
             <button
               onClick={() => {
                 handleAddBitacora()
                 setShowForm(true)
               }}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center gap-2"
+              className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 
+                       text-white px-4 py-2 rounded-lg transition-colors duration-300 
+                       flex items-center gap-2 shadow-md hover:shadow-lg"
             >
-              <Plus className="h-5 w-5" />
+              <Plus size={20} />
               <span className="hidden sm:inline">Agregar Bitácora</span>
             </button>
           </div>
 
-          <div className="overflow-x-auto rounded-lg border border-gray-200">
-            <div className="inline-block min-w-full align-middle">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
+          <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white dark:bg-gray-800">
+                <thead className="bg-gray-50 dark:bg-gray-700">
                   <tr>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Bitácora</th>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Fecha</th>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Usuario</th>
-                    <th scope="col" className="hidden md:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Hora</th>
-                    <th scope="col" className="hidden lg:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Nave</th>
-                    <th scope="col" className="hidden lg:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Cámara</th>
-                    <th scope="col" className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Novedad</th>
-                    <th scope="col" className="hidden xl:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Resultado</th>
-                    <th scope="col" className="hidden xl:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Referencia</th>
-                    <th scope="col" className="hidden sm:table-cell px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Turno</th>
-                    <th scope="col" className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap">Acciones</th>
+                    {Object.entries({
+                      'id_bitacora': 'Bitácora',
+                      'fecha': 'Fecha',
+                      'nombres': 'Usuario',
+                      'hora': 'Hora',
+                      'nombre': 'Nave',
+                      'camara': 'Cámara',
+                      'novedad': 'Novedad',
+                      'resultado': 'Resultado',
+                      'referencia': 'Referencia',
+                      'turno': 'Turno'
+                    }).map(([key, label]) => (
+                      <th key={key} className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-200 uppercase tracking-wider">
+                        {label}
+                      </th>
+                    ))}
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-gray-200 uppercase tracking-wider">
+                      Acciones
+                    </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                   {currentItems.map((bitacora) => (
-                    <tr key={bitacora.id_bitacora} className="hover:bg-gray-50">
-                      <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{bitacora.id_bitacora}</td>
-                      <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{bitacora.fecha}</td>
-                      <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{bitacora.nombres}</td>
-                      <td className="hidden md:table-cell px-4 py-2 whitespace-nowrap text-sm text-gray-900">{bitacora.hora}</td>
-                      <td className="hidden lg:table-cell px-4 py-2 whitespace-nowrap text-sm text-gray-900">{bitacora.nombre || 'N/A'}</td>
-                      <td className="hidden lg:table-cell px-4 py-2 whitespace-nowrap text-sm text-gray-900">{bitacora.camara}</td>
-                      <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-900">
-                        <div className="max-w-xs truncate">{bitacora.novedad}</div>
-                      </td>
-                      <td className="hidden xl:table-cell px-4 py-2 whitespace-nowrap text-sm text-gray-900">{bitacora.resultado}</td>
-                      <td className="hidden xl:table-cell px-4 py-2 whitespace-nowrap text-sm text-gray-900">{bitacora.referencia}</td>
-                      <td className="hidden sm:table-cell px-4 py-2 whitespace-nowrap text-sm text-gray-900">{bitacora.turno}</td>
-                      <td className="px-4 py-2 whitespace-nowrap text-right text-sm font-medium">
+                    <tr key={bitacora.id_bitacora} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                      {Object.keys(bitacora).map((key) => (
+                        <td key={key} className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
+                          {bitacora[key]}
+                        </td>
+                      ))}
+                      <td className="px-4 py-3 whitespace-nowrap text-right">
                         <div className="flex justify-end gap-2">
                           <IconButton onClick={() => handleEdit(bitacora)} color="edit" ariaLabel="Editar">
-                            <Pencil className="h-5 w-5" />
+                            <Edit2 size={18} />
                           </IconButton>
                           <IconButton onClick={() => handleDelete(bitacora.id_bitacora)} color="delete" ariaLabel="Eliminar">
-                            <Trash2 className="h-5 w-5" />
+                            <Trash2 size={18} />
                           </IconButton>
                         </div>
                       </td>
@@ -159,72 +150,44 @@ const Bitacoras = () => {
             </div>
           </div>
 
-          <nav className="flex items-center justify-between mt-6" aria-label="Pagination">
-            <div className="flex-1 flex justify-between sm:hidden">
+          <div className="flex items-center justify-between mt-6">
+            <p className="text-sm text-gray-700 dark:text-gray-300">
+              Mostrando {(currentPage - 1) * itemsPerPage + 1} a {Math.min(currentPage * itemsPerPage, bitacoras.length)} de {bitacoras.length} bitácoras
+            </p>
+
+            <nav className="flex items-center gap-2" aria-label="Paginación">
               <button
-                onClick={handlePrevPage}
+                onClick={() => paginate(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
-                className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 
+                         disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
               >
-                Anterior
+                <ChevronLeft size={20} />
               </button>
+
+              {getPageRange().map((page) => (
+                <button
+                  key={page}
+                  onClick={() => paginate(page)}
+                  className={`px-4 py-2 rounded-lg transition-colors duration-300 
+                    ${currentPage === page 
+                      ? 'bg-blue-500 text-white' 
+                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                >
+                  {page}
+                </button>
+              ))}
+
               <button
-                onClick={handleNextPage}
+                onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
                 disabled={currentPage === totalPages}
-                className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 
+                         disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
               >
-                Siguiente
+                <ChevronRight size={20} />
               </button>
-            </div>
-            <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-              <div>
-                <p className="text-sm text-gray-700">
-                  Mostrando{' '}
-                  <span className="font-medium">{(currentPage - 1) * itemsPerPage + 1}</span>
-                  {' '}-{' '}
-                  <span className="font-medium">
-                    {Math.min(currentPage * itemsPerPage, bitacoras.length)}
-                  </span>
-                  {' '}de{' '}
-                  <span className="font-medium">{bitacoras.length}</span>
-                  {' '}resultados
-                </p>
-              </div>
-              <div>
-                <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                  <button
-                    onClick={handlePrevPage}
-                    disabled={currentPage === 1}
-                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                  >
-                    <span className="sr-only">Anterior</span>
-                    <ChevronLeft className="h-5 w-5" />
-                  </button>
-                  {getPageRange().map((page) => (
-                    <button
-                      key={page}
-                      onClick={() => paginate(page)}
-                      className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
-                        currentPage === page
-                          ? 'z-10 bg-blue-50 border-blue-500 text-blue-600'
-                          : 'bg-white border-gray-300 text-gray-500 hover:bg-gray-50'
-                      }`}
-                    >
-                      {page}
-                    </button>
-                  ))}
-                  <button
-                    onClick={handleNextPage}
-                    disabled={currentPage === totalPages}
-                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50"
-                  >
-                    <span className="sr-only">Siguiente</span>
-                    <ChevronRight className="h-5 w-5" />
-                  </button>
-                </nav>
-              </div>
-            </div>
-          </nav>
+            </nav>
+          </div>
         </div>
       </div>
 

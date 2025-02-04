@@ -4,7 +4,7 @@ import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 import Home from './pages/Home';
 import Bitacoras from './pages/Bitacoras';
-import Login from './components/Login';
+import Login from './pages/Login';
 import Usuarios from './pages/Usuarios';
 import { AuthProvider } from './context/AuthContext';
 
