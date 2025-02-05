@@ -58,12 +58,12 @@ export const useBitacoras = () => {
     try {
       if (editMode && currentBitacora) {
         await axios.post(
-          `${API_URL}/bitacora_modificar`,
+          `${API_URL}/log/bitacora_modificar`,
           { ...formData, id_bitacora: currentBitacora.id_bitacora },
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
-        await axios.post(`${API_URL}/bitacoras/bitacora_add`, formData, {
+        await axios.post(`${API_URL}/log/bitacora_add`, formData, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }
