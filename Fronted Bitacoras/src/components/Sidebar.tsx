@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react"; 
+import { Link, useLocation } from "react-router-dom";
 import { FcKindle, FcBusinessman, FcStatistics } from "react-icons/fc";
 import { FiX } from "react-icons/fi";
 
@@ -8,6 +8,7 @@ interface SidebarItemProps {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   collapsed?: boolean;
+  isActive: boolean; // Nuevo prop para detectar si es la página activa
 }
 
 interface SidebarProps {
@@ -16,11 +17,13 @@ interface SidebarProps {
   toggleSidebar: () => void; // Función para abrir/cerrar el sidebar
 }
 
-const SidebarItem: React.FC<SidebarItemProps> = ({ to, icon: Icon, label, collapsed }) => (
+const SidebarItem: React.FC<SidebarItemProps> = ({ to, icon: Icon, label, collapsed, isActive }) => (
   <li>
     <Link
       to={to}
-      className="flex items-center gap-4 p-4 text-lg font-semibold text-gray-900 rounded-xl dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-300"
+      className={`flex items-center gap-4 p-4 text-lg font-semibold rounded-xl transition-all duration-300
+        ${isActive ? "bg-gray-300 dark:bg-gray-700 text-gray-900 dark:text-gray-100" : "text-gray-900 dark:text-gray-100 hover:bg-gray-200 dark:hover:bg-gray-700"}
+      `}
       aria-label={label}
     >
       <Icon className="w-8 h-8" />
@@ -30,6 +33,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ to, icon: Icon, label, collap
 );
 
 const Sidebar: React.FC<SidebarProps> = ({ userData, isOpen, toggleSidebar }) => {
+  const location = useLocation(); // Obtener la página actual
   const [isCollapsed, setIsCollapsed] = useState(window.innerWidth < 768);
 
   useEffect(() => {
@@ -56,16 +60,16 @@ const Sidebar: React.FC<SidebarProps> = ({ userData, isOpen, toggleSidebar }) =>
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-screen pt-20 bg-white  dark:bg-gray-900 dark:border-gray-700 transition-all duration-300
+        className={`fixed top-0 left-0 h-screen pt-20 bg-white dark:bg-gray-900 dark:border-gray-700 transition-all duration-300
           ${isCollapsed ? "w-20" : "w-72"}
           ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
       >
         <div className="h-full px-2 pb-6 overflow-y-auto bg-white dark:bg-gray-900">
           <ul className="space-y-4 font-medium">
-            <SidebarItem to="/home" icon={FcStatistics} label="Dashboard" collapsed={isCollapsed} />
-            <SidebarItem to="/bitacoras" icon={FcKindle} label="Bitácoras" collapsed={isCollapsed} />
+            <SidebarItem to="/home" icon={FcStatistics} label="Dashboard" collapsed={isCollapsed} isActive={location.pathname === "/home"} />
+            <SidebarItem to="/bitacoras" icon={FcKindle} label="Bitácoras" collapsed={isCollapsed} isActive={location.pathname === "/bitacoras"} />
             {userData?.id_rol_per === 1 && (
-              <SidebarItem to="/usuarios" icon={FcBusinessman} label="Usuarios" collapsed={isCollapsed} />
+              <SidebarItem to="/usuarios" icon={FcBusinessman} label="Usuarios" collapsed={isCollapsed} isActive={location.pathname === "/usuarios"} />
             )}
           </ul>
         </div>
