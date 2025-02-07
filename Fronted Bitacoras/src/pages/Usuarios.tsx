@@ -1,41 +1,42 @@
-import React, { useState } from 'react';
-import { useUsuarios } from '../hooks/useUsuarios';
-import ModalUsuario from '../Mod/ModalUsuario';
-import { Edit2, Trash2, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react'
+import { useUsuarios } from '../hooks/useUsuarios'
+import ModalUsuario from '../Mod/ModalUsuario'
+import {
+  Edit2,
+  Trash2,
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from 'lucide-react'
 
-const IconButton = ({ 
-  children, 
-  onClick, 
+const IconButton = ({
+  children,
+  onClick,
   color = 'default',
-  ariaLabel 
+  ariaLabel,
 }: {
-  children: React.ReactNode;
-  onClick: () => void;
-  color?: 'default' | 'edit' | 'delete';
-  ariaLabel: string;
+  children: React.ReactNode
+  onClick: () => void
+  color?: 'default' | 'edit' | 'delete'
+  ariaLabel: string
 }) => {
   const colorStyles = {
     default: 'text-gray-600 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700',
     edit: 'text-yellow-600 hover:bg-yellow-100 dark:text-yellow-400 dark:hover:bg-yellow-900',
-    delete: 'text-red-600 hover:bg-red-100 dark:text-red-400 dark:hover:bg-red-900'
-  };
-
+    delete: 'text-red-600 hover:bg-red-100 dark:text-red-400 dark:hover:bg-red-900',
+  }
   return (
     <button
       onClick={onClick}
       aria-label={ariaLabel}
-      className={`
-        p-2 rounded-lg
-        transition-all duration-300
-        focus:outline-none focus:ring-2 focus:ring-opacity-50
-        ${colorStyles[color]}
-      `}
+      className={`p-2 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-opacity-50 ${colorStyles[color]}`}
     >
       {children}
     </button>
-  );
-};
-
+  )
+}
 const Usuarios = () => {
   const {
     usuarios,
@@ -43,7 +44,6 @@ const Usuarios = () => {
     error,
     currentPage,
     itemsPerPage,
-    currentItems,
     showModal,
     formData,
     editMode,
@@ -55,128 +55,213 @@ const Usuarios = () => {
     openModal,
     paginate,
     setShowModal,
-  } = useUsuarios();
+  } = useUsuarios()
 
-  const [confirmAction, setConfirmAction] = useState<null | 'delete' | 'edit'>(null);
-  const [usuarioToDelete, setUsuarioToDelete] = useState<number | null>(null);
+  const [goToPage, setGoToPage] = useState('')
 
-  if (loading) return <div className="text-center py-4">Cargando usuarios...</div>;
-  if (error) return <div className="text-center py-4 text-red-500">{error}</div>;
-
-  const totalPages = Math.ceil(usuarios.length / itemsPerPage);
-  const getPageRange = () => {
-    const maxPagesToShow = 5;
-    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
-    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
-    
-    if (endPage - startPage + 1 < maxPagesToShow) {
-      startPage = Math.max(1, endPage - maxPagesToShow + 1);
-    }
-    
-    return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
-  };
+  // Ordenar los usuarios por ID descendente (del más reciente al más antiguo)
+  const sortedUsuarios = [...usuarios].sort((a, b) => b.id_usuario - a.id_usuario)
+  const totalPages = Math.ceil(sortedUsuarios.length / itemsPerPage)
+  const currentItems = sortedUsuarios.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage,
+  )
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6 text-center dark:text-white">Usuarios</h1>
+    <main className="ml-10 mt-24 p-6 dark:bg-gray-900 dark:text-gray-200 transition-colors duration-300">
+      <div className="container mx-auto p-4">
+        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+          {/* Encabezado */}
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Usuarios</h1>
+            <button
+              onClick={() => {
+                handleAddUsuario()
+                openModal()
+              }}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            >
+              <Plus size={20} />
+              <span className="hidden sm:inline">Agregar Usuario</span>
+            </button>
+          </div>
 
-      <button
-        onClick={() => {
-          handleAddUsuario();
-          openModal();
-        }}
-        className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 
-                   text-white px-4 py-2 rounded-lg mb-6 flex items-center gap-2 mx-auto 
-                   transition-colors duration-300 shadow-md hover:shadow-lg"
-      >
-        <Plus size={20} />
-        Agregar Usuario
-      </button>
+          {/* Contenido */}
+          <div className="grid gap-1">
+            {currentItems.map((usuario) => (
+              <div
+                key={usuario.id_usuario}
+                className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4"
+              >
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-1">
+                  <div>
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">ID:</span>
+                    <span className="ml-2 text-gray-900 dark:text-gray-100">
+                      {usuario.id_usuario}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">
+                      Cédula:
+                    </span>
+                    <span className="ml-2 text-gray-900 dark:text-gray-100">
+                      {usuario.cedula}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">
+                      Nombres:
+                    </span>
+                    <span className="ml-2 text-gray-900 dark:text-gray-100">
+                      {usuario.nombres}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">
+                      Usuario:
+                    </span>
+                    <span className="ml-2 text-gray-900 dark:text-gray-100">
+                      {usuario.usuario}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">
+                      Dirección:
+                    </span>
+                    <span className="ml-2 text-gray-900 dark:text-gray-100">
+                      {usuario.direccion}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">
+                      Teléfono:
+                    </span>
+                    <span className="ml-2 text-gray-900 dark:text-gray-100">
+                      {usuario.telefono}
+                    </span>
+                  </div>
+                  <div className="md:col-span-2 lg:col-span-3">
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">
+                      Estado:
+                    </span>
+                    <span className="ml-2 text-gray-900 dark:text-gray-100">
+                      {usuario.estado}
+                    </span>
+                  </div>
+                  <div className="md:col-span-2 lg:col-span-3">
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">Rol:</span>
+                    <span className="ml-2 text-gray-900 dark:text-gray-100">
+                      {usuario.id_rol_per}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">
+                      Cargo:
+                    </span>
+                    <span className="ml-2 text-gray-900 dark:text-gray-100">
+                      {usuario.cargo}
+                    </span>
+                  </div>
 
-      <div className="rounded-lg shadow-md overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white dark:bg-gray-800">
-            <thead className="bg-gray-50 dark:bg-gray-700">
-              <tr>
-                {Object.keys(formData).map((key) => (
-                  <th key={key} className="px-4 py-3 text-left text-sm font-semibold text-gray-600 dark:text-gray-200 uppercase tracking-wider">
-                    {key}
-                  </th>
-                ))}
-                <th className="px-4 py-3 text-left text-sm font-semibold text-gray-600 dark:text-gray-200">Acciones</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-              {currentItems.map((usuario) => (
-                <tr key={usuario.id_usuario} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
-                  {Object.keys(formData).map((key) => (
-                    <td key={key} className="px-4 py-3 text-sm text-gray-900 dark:text-gray-300">
-                      {usuario[key]}
-                    </td>
-                  ))}
-                  <td className="px-4 py-3">
+                  <div className="flex justify-end md:col-span-2 lg:col-span-1">
                     <div className="flex gap-2">
-                      <IconButton onClick={() => handleEdit(usuario)} color="edit" ariaLabel="Editar">
+                      <IconButton
+                        onClick={() => handleEdit(usuario)}
+                        color="edit"
+                        ariaLabel="Editar"
+                      >
                         <Edit2 size={18} />
                       </IconButton>
                       <IconButton
-                        onClick={() => {
-                          setConfirmAction('delete');
-                          setUsuarioToDelete(usuario.id_usuario);
-                        }}
+                        onClick={() => handleDelete(usuario.id_bitacora)}
                         color="delete"
                         ariaLabel="Eliminar"
                       >
                         <Trash2 size={18} />
                       </IconButton>
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  </div>
+                </div>
+
+
+              </div>
+            ))}
+          </div>
+
+          {/* Paginación */}
+          <div className="flex items-center justify-between mt-6">
+            <p className="text-sm text-gray-700 dark:text-gray-300">
+              Mostrando {(currentPage - 1) * itemsPerPage + 1} -{' '}
+              {Math.min(currentPage * itemsPerPage, sortedUsuarios.length)}
+              <br />
+              de {sortedUsuarios.length} usuarios | Página {currentPage} de {totalPages}
+            </p>
+
+            <nav className="flex items-center gap-2">
+
+  {/* Botón ir a primera página */}
+  <button
+    onClick={() => paginate(1)}
+    disabled={currentPage === 1}
+    className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+  >
+    <ChevronsLeft size={20} />
+  </button>
+
+  {/* Botón ir a página anterior */}
+  <button
+    onClick={() => paginate(currentPage - 1)}
+    disabled={currentPage === 1}
+    className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+  >
+    <ChevronLeft size={20} />
+  </button>
+
+  {/* Botón ir a página siguiente */}
+  <button
+    onClick={() => paginate(currentPage + 1)}
+    disabled={currentPage === totalPages}
+    className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+  >
+    <ChevronRight size={20} />
+  </button>
+
+  {/* Botón ir a última página */}
+  <button
+    onClick={() => paginate(totalPages)}
+    disabled={currentPage === totalPages}
+    className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+  >
+    <ChevronsRight size={20} />
+  </button>
+
+  {/* Input para ir a página específica */}
+  <input
+    type="number"
+    min="1"
+    max={totalPages}
+    value={goToPage || currentPage}
+    onChange={(e) => setGoToPage(e.target.value)}
+    onKeyPress={(e) => {
+      if (e.key === 'Enter') {
+        const pageNumber = parseInt(goToPage)
+        if (pageNumber >= 1 && pageNumber <= totalPages) paginate(pageNumber)
+      }
+    }}
+    className="w-12 text-center border rounded-md bg-gray-100 dark:bg-gray-900 text-black dark:text-white border-gray-300 dark:border-gray-600"
+  />
+
+  {/* Texto "/ totalPages" */}
+  <span className="text-sm text-gray-700 dark:text-gray-200">
+    / {totalPages}
+  </span>
+</nav>
+
+          </div>
         </div>
       </div>
 
-      <div className="flex items-center justify-between mt-6">
-        <p className="text-sm text-gray-700 dark:text-gray-300">
-          Mostrando {(currentPage - 1) * itemsPerPage + 1} a {Math.min(currentPage * itemsPerPage, usuarios.length)} de {usuarios.length} usuarios
-        </p>
-        
-        <nav className="flex items-center gap-2" aria-label="Paginación">
-          <button
-            onClick={() => paginate(Math.max(1, currentPage - 1))}
-            disabled={currentPage === 1}
-            className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 
-                     disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
-          >
-            <ChevronLeft size={20} />
-          </button>
-          
-          {getPageRange().map((page) => (
-            <button
-              key={page}
-              onClick={() => paginate(page)}
-              className={`px-4 py-2 rounded-lg transition-colors duration-300 
-                ${currentPage === page 
-                  ? 'bg-blue-500 text-white' 
-                  : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
-            >
-              {page}
-            </button>
-          ))}
-          
-          <button
-            onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
-            disabled={currentPage === totalPages}
-            className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 
-                     disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
-          >
-            <ChevronRight size={20} />
-          </button>
-        </nav>
-      </div>
-
+      {/* Modal */}
       <ModalUsuario
         fieldsToDisplay={{
           cedula: 'Cédula',
@@ -184,7 +269,7 @@ const Usuarios = () => {
           usuario: 'Nombre de Usuario',
           contrasenia: 'Contraseña',
           direccion: 'Dirección',
-          telefono: "Teléfono",
+          telefono: 'Teléfono',
           estado: 'Estado',
           id_rol_per: 'Rol de Usuario',
           cargo: 'Cargo',
@@ -196,41 +281,8 @@ const Usuarios = () => {
         handleInputChange={handleInputChange}
         handleSubmit={handleSubmit}
       />
+    </main>
+  )
+}
 
-      {confirmAction && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-            <h3 className="text-lg font-bold text-center dark:text-white">
-              ¿Estás seguro de que deseas {confirmAction === 'delete' ? 'eliminar' : 'editar'} este usuario?
-            </h3>
-            <div className="flex justify-center space-x-4 mt-4">
-              <button
-                onClick={() => {
-                  if (confirmAction === 'delete' && usuarioToDelete !== null) {
-                    handleDelete(usuarioToDelete);
-                  } else if (confirmAction === 'edit') {
-                    handleEdit(formData);
-                  }
-                }}
-                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300"
-              >
-                Confirmar
-              </button>
-              <button 
-                onClick={() => {
-                  setConfirmAction(null);
-                  setUsuarioToDelete(null);
-                }}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors duration-300"
-              >
-                Cancelar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export default Usuarios;
+export default Usuarios

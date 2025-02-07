@@ -7,9 +7,10 @@ export const useBitacoras = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [itemsPerPage] = useState<number>(14);
+  const [itemsPerPage] = useState<number>(3);
   const [showForm, setShowForm] = useState<boolean>(false);
   const [editMode, setEditMode] = useState<boolean>(false);
+  
   const [currentBitacora, setCurrentBitacora] = useState<any>(null);
 
   const initialFormState = {
@@ -58,12 +59,12 @@ export const useBitacoras = () => {
     try {
       if (editMode && currentBitacora) {
         await axios.post(
-          `${API_URL}/bitacora_modificar`,
+          `${API_URL}/log/bitacora_modificar`,
           { ...formData, id_bitacora: currentBitacora.id_bitacora },
           { headers: { Authorization: `Bearer ${token}` } }
         );
       } else {
-        await axios.post(`${API_URL}/bitacoras/bitacora_add`, formData, {
+        await axios.post(`${API_URL}/log/bitacora_add`, formData, {
           headers: { Authorization: `Bearer ${token}` },
         });
       }
