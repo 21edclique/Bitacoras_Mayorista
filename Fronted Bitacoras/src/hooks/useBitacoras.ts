@@ -10,6 +10,7 @@ export const useBitacoras = () => {
   const [itemsPerPage] = useState<number>(3);
   const [showForm, setShowForm] = useState<boolean>(false);
   const [editMode, setEditMode] = useState<boolean>(false);
+  
   const [currentBitacora, setCurrentBitacora] = useState<any>(null);
 
   const initialFormState = {

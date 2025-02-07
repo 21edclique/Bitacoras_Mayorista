@@ -123,4 +123,16 @@
       margin-left: 4rem;
     }
   }
+
+  .main-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
+  }
+  
+  .inner-container {
+    max-width: 800px; /* Centra y limita el ancho */
+    width: 100%;
+  }
   

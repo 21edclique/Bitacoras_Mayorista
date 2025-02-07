@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { X } from 'lucide-react';
+import { FaEye, FaEyeSlash } from 'react-icons/fa'
 
 type ModalUsuarioProps = {
   showModal: boolean;
@@ -90,7 +91,7 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
                   >
-                    {showPassword ? '🙈' : '👁️'}
+                    {showPassword ? <FaEye/> : <FaEyeSlash/>}
                   </button>
                 </div>
               ) : (
