@@ -8,11 +8,10 @@ import Login from "./pages/Login";
 import Usuarios from "./pages/Usuarios";
 import "./App.css";
 
-
 const App: React.FC = () => {
   const [userData, setUserData] = useState<{ id_rol_per: number; nombre: string } | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(window.innerWidth >= 768);
 
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
@@ -22,6 +21,17 @@ const App: React.FC = () => {
       setToken(savedToken);
       setUserData(JSON.parse(savedUserData));
     }
+
+    const handleResize = () => {
+      if (window.innerWidth < 768) {
+        setIsSidebarOpen(false); // En móviles, Sidebar cerrado por defecto
+      } else {
+        setIsSidebarOpen(true); // En escritorio, Sidebar abierto siempre
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const handleLogout = useCallback(() => {
@@ -45,21 +55,38 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <div className="flex h-screen bg-gray-100">
-        {/* Sidebar - Colapsable */}
-        <Sidebar userData={userData} isOpen={isSidebarOpen} toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} />
+      <div className="flex h-screen bg-gray-100 dark:bg-gray-800 overflow-hidden">
+        
+        {/* Sidebar mantiene su diseño original, pero en móviles se oculta hasta que se active */}
+        <Sidebar 
+          userData={userData} 
+          isOpen={isSidebarOpen} 
+          toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
+        />
 
-        {/* Contenido Principal */}
-        <div className={`flex-1 flex flex-col transition-all ${isSidebarOpen ? "ml-64" : "ml-16"} overflow-hidden`}>
-          <Navbar handleLogout={handleLogout} />
-          <div className="flex-1 overflow-y-auto p-6">
-            <Routes>
-              <Route path="/home" element={<Home />} />
-              <Route path="/bitacoras" element={<Bitacoras />} />
-              <Route path="/usuarios" element={userData?.id_rol_per === 1 ? <Usuarios /> : <Navigate to="/bitacoras" />} />
-              <Route path="*" element={<Navigate to="/home" />} />
-            </Routes>
-          </div>
+        <div className={`flex-1 flex flex-col transition-all duration-300 
+          ${isSidebarOpen ? 'md:ml-72' : 'ml-0'}`}>
+          
+          {/* Navbar con botón para abrir/cerrar Sidebar en móviles */}
+          <Navbar 
+            handleLogout={handleLogout} 
+            toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
+          />
+          
+          <main className="flex-1 overflow-y-auto p-4 pt-20">
+            <div className="container mx-auto">
+              <Routes>
+                <Route path="/home" element={<Home />} />
+                <Route path="/bitacoras" element={<Bitacoras />} />
+                <Route 
+                  path="/usuarios" 
+                  element={userData?.id_rol_per === 1 ? <Usuarios /> : <Navigate to="/bitacoras" />} 
+                />
+                <Route path="*" element={<Navigate to="/home" />} />
+              </Routes>
+            </div>
+          </main>
+
         </div>
       </div>
     </Router>

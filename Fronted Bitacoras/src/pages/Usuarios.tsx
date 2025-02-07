@@ -1,7 +1,35 @@
 import React, { useState } from 'react';
 import { useUsuarios } from '../hooks/useUsuarios';
 import ModalUsuario from '../Mod/ModalUsuario';
-import { Edit2, Trash2, Plus, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
+import { Edit2, Trash2, Plus, ChevronLeft, ChevronRight } from 'lucide-react';
+
+const IconButton = ({
+  children,
+  onClick,
+  color = 'default',
+  ariaLabel
+}: {
+  children: React.ReactNode;
+  onClick: () => void;
+  color?: 'default' | 'edit' | 'delete';
+  ariaLabel: string;
+}) => {
+  const colorStyles = {
+    default: 'text-gray-600 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700',
+    edit: 'text-yellow-600 hover:bg-yellow-100 dark:text-yellow-400 dark:hover:bg-yellow-900',
+    delete: 'text-red-600 hover:bg-red-100 dark:text-red-400 dark:hover:bg-red-900'
+  };
+
+  return (
+    <button
+      onClick={onClick}
+      aria-label={ariaLabel}
+      className={`p-2 rounded-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-opacity-50 ${colorStyles[color]}`}
+    >
+      {children}
+    </button>
+  );
+};
 
 const Usuarios = () => {
   const {
@@ -24,26 +52,54 @@ const Usuarios = () => {
     setShowModal,
   } = useUsuarios();
 
-  const [confirmAction, setConfirmAction] = useState<null | 'delete'>(null);
+  const [confirmAction, setConfirmAction] = useState<null | 'delete' | 'edit'>(null);
   const [usuarioToDelete, setUsuarioToDelete] = useState<number | null>(null);
 
-  if (loading) return <div className="flex justify-center items-center min-h-screen">Cargando...</div>;
-  if (error) return <div className="flex justify-center items-center min-h-screen text-red-500">{error}</div>;
+  if (loading) return (
+    <div className="flex justify-center items-center min-h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 dark:border-blue-400"></div>
+    </div>
+  );
+
+  if (error) return (
+    <div className="flex justify-center items-center min-h-screen">
+      <div className="bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg" role="alert">
+        <strong className="font-bold">Error: </strong>
+        <span className="block sm:inline">{error}</span>
+      </div>
+    </div>
+  );
 
   const totalPages = Math.ceil(usuarios.length / itemsPerPage);
-
-  const confirmDelete = () => {
-    if (usuarioToDelete !== null) {
-      handleDelete(usuarioToDelete);
-      setUsuarioToDelete(null);
-      setConfirmAction(null);
+  const getPageRange = () => {
+    const maxPagesToShow = window.innerWidth < 640 ? 3 : 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
+    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1);
+    
+    if (endPage - startPage + 1 < maxPagesToShow) {
+      startPage = Math.max(1, endPage - maxPagesToShow + 1);
     }
+    
+    return Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i);
+  };
+
+  const tableHeaders = {
+    'id_usuario': 'ID',
+    'cedula': 'Cédula',
+    'nombres': 'Nombres',
+    'usuario': 'Usuario',
+    'direccion': 'Dirección',
+    'telefono': 'Teléfono',
+    'estado': 'Estado',
+    'id_rol_per': 'Rol',
+    'cargo': 'Cargo'
   };
 
   return (
     <main className="ml-10 mt-24 p-6 dark:bg-gray-900 dark:text-gray-200 transition-colors duration-300">
-      <div className="container mx-auto p-4">
-        <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
+    <div className="container mx-auto p-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+        <div className="p-6">
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Usuarios</h1>
             <button
@@ -51,74 +107,156 @@ const Usuarios = () => {
                 handleAddUsuario();
                 openModal();
               }}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+              className="bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700 
+                       text-white px-4 py-2 rounded-lg transition-colors duration-300 
+                       flex items-center gap-2 shadow-md hover:shadow-lg"
             >
               <Plus size={20} />
               <span className="hidden sm:inline">Agregar Usuario</span>
             </button>
           </div>
 
-          {/* Tabla */}
-          <div className="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg">
-            <table className="table-fixed w-full bg-white dark:bg-gray-800">
-              <thead className="bg-gray-50 dark:bg-gray-700">
-                <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-200 uppercase">ID</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-200 uppercase">Cédula</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-200 uppercase">Nombres</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-200 uppercase">Usuario</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-200 uppercase">Dirección</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-200 uppercase">Teléfono</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-200 uppercase">Estado</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-200 uppercase">Rol</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-200 uppercase">Cargo</th>
-                  <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-gray-200 uppercase">Acciones</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {currentItems.map((usuario) => (
-                  <tr key={usuario.id_usuario} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                    <td className="px-4 py-3 text-sm">{usuario.id_usuario}</td>
-                    <td className="px-4 py-3 text-sm">{usuario.cedula}</td>
-                    <td className="px-4 py-3 text-sm">{usuario.nombres}</td>
-                    <td className="px-4 py-3 text-sm">{usuario.usuario}</td>
-                    <td className="px-4 py-3 text-sm">{usuario.direccion}</td>
-                    <td className="px-4 py-3 text-sm">{usuario.telefono}</td>
-                    <td className="px-4 py-3 text-sm">{usuario.estado}</td>
-                    <td className="px-4 py-3 text-sm">{usuario.id_rol_per}</td>
-                    <td className="px-4 py-3 text-sm">{usuario.cargo}</td>
-                    <td className="px-4 py-3 text-right">
-                      <button onClick={() => { handleEdit(usuario); openModal(); }} className="text-yellow-600 px-2">
-                        <Edit2 size={18} />
-                      </button>
-                      <button onClick={() => { setConfirmAction('delete'); setUsuarioToDelete(usuario.id_usuario); }} className="text-red-600 px-2">
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
+          <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white dark:bg-gray-800">
+                <thead className="bg-gray-50 dark:bg-gray-700">
+                  <tr>
+                    {Object.entries(tableHeaders).map(([key, label]) => (
+                      <th key={key} className="px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-200 uppercase tracking-wider">
+                        {label}
+                      </th>
+                    ))}
+                    <th className="px-4 py-3 text-right text-xs font-semibold text-gray-600 dark:text-gray-200 uppercase tracking-wider">
+                      Acciones
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {currentItems.map((usuario) => (
+                    <tr key={usuario.id_usuario} className="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                      {Object.keys(tableHeaders).map((key) => (
+                        <td key={key} className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-gray-300">
+                          {usuario[key]}
+                        </td>
+                      ))}
+                      <td className="px-4 py-3 whitespace-nowrap text-right">
+                        <div className="flex justify-end gap-2">
+                          <IconButton onClick={() => handleEdit(usuario)} color="edit" ariaLabel="Editar">
+                            <Edit2 size={18} />
+                          </IconButton>
+                          <IconButton
+                            onClick={() => {
+                              setConfirmAction('delete');
+                              setUsuarioToDelete(usuario.id_usuario);
+                            }}
+                            color="delete"
+                            ariaLabel="Eliminar"
+                          >
+                            <Trash2 size={18} />
+                          </IconButton>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
 
-          {/* Confirmación de eliminación */}
-          {confirmAction === 'delete' && (
-            <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-                <h3 className="text-lg font-bold text-center dark:text-white">¿Estás seguro de que deseas eliminar este usuario?</h3>
-                <div className="flex justify-center space-x-4 mt-4">
-                  <button onClick={confirmDelete} className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg">
-                    Confirmar
-                  </button>
-                  <button onClick={() => setConfirmAction(null)} className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
-                    Cancelar
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
+          <div className="flex items-center justify-between mt-6">
+            <p className="text-sm text-gray-700 dark:text-gray-300">
+              Mostrando {(currentPage - 1) * itemsPerPage + 1} a {Math.min(currentPage * itemsPerPage, usuarios.length)} de {usuarios.length} usuarios
+            </p>
+
+            <nav className="flex items-center gap-2" aria-label="Paginación">
+              <button
+                onClick={() => paginate(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 
+                         disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
+              >
+                <ChevronLeft size={20} />
+              </button>
+
+              {getPageRange().map((page) => (
+                <button
+                  key={page}
+                  onClick={() => paginate(page)}
+                  className={`px-4 py-2 rounded-lg transition-colors duration-300 
+                    ${currentPage === page 
+                      ? 'bg-blue-500 text-white' 
+                      : 'text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                >
+                  {page}
+                </button>
+              ))}
+
+              <button
+                onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
+                disabled={currentPage === totalPages}
+                className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 
+                         disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-300"
+              >
+                <ChevronRight size={20} />
+              </button>
+            </nav>
+          </div>
         </div>
       </div>
+
+      <ModalUsuario
+        fieldsToDisplay={{
+          cedula: 'Cédula',
+          nombres: 'Nombres Completos',
+          usuario: 'Nombre de Usuario',
+          contrasenia: 'Contraseña',
+          direccion: 'Dirección',
+          telefono: "Teléfono",
+          estado: 'Estado',
+          id_rol_per: 'Rol de Usuario',
+          cargo: 'Cargo',
+        }}
+        showModal={showModal}
+        setShowModal={setShowModal}
+        editMode={editMode}
+        formData={formData}
+        handleInputChange={handleInputChange}
+        handleSubmit={handleSubmit}
+      />
+
+      {confirmAction && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
+            <h3 className="text-lg font-bold text-center dark:text-white">
+              ¿Estás seguro de que deseas {confirmAction === 'delete' ? 'eliminar' : 'editar'} este usuario?
+            </h3>
+            <div className="flex justify-center space-x-4 mt-4">
+              <button
+                onClick={() => {
+                  if (confirmAction === 'delete' && usuarioToDelete !== null) {
+                    handleDelete(usuarioToDelete);
+                  }
+                  setConfirmAction(null);
+                  setUsuarioToDelete(null);
+                }}
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors duration-300"
+              >
+                Confirmar
+              </button>
+              <button 
+                onClick={() => {
+                  setConfirmAction(null);
+                  setUsuarioToDelete(null);
+                }}
+                className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors duration-300"
+              >
+                Cancelar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
     </main>
   );
 };
