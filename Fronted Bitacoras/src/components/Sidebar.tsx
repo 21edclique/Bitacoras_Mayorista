@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { FcKindle, FcBusinessman } from "react-icons/fc";
+import { FcStatistics } from "react-icons/fc";
 
 interface SidebarItemProps {
   to: string;
@@ -10,7 +11,10 @@ interface SidebarItemProps {
 
 interface SidebarProps {
   userData: { id_rol_per: number } | null;
+  isOpen: boolean; // Nuevo
+  toggleSidebar: () => void; // Nuevo
 }
+
 
 const SidebarItem: React.FC<SidebarItemProps> = ({ to, icon: Icon, label }) => (
   <li>
@@ -25,7 +29,7 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ to, icon: Icon, label }) => (
   </li>
 );
 
-const Sidebar: React.FC<SidebarProps> = ({ userData }) => {
+const Sidebar: React.FC<SidebarProps> = ({ userData, isOpen, toggleSidebar }) => {
   const [systemDarkMode, setSystemDarkMode] = useState(
     window.matchMedia('(prefers-color-scheme: dark)').matches
   );
@@ -33,7 +37,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userData }) => {
   useEffect(() => {
     const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const updateDarkMode = (e: MediaQueryListEvent) => setSystemDarkMode(e.matches);
-    
+
     darkModeQuery.addEventListener('change', updateDarkMode);
     return () => darkModeQuery.removeEventListener('change', updateDarkMode);
   }, []);
@@ -47,24 +51,25 @@ const Sidebar: React.FC<SidebarProps> = ({ userData }) => {
   }, [systemDarkMode]);
 
   return (
-    <aside
-      id="logo-sidebar"
-      className="fixed top-0 left-0 z-40 w-72 h-screen pt-20 transition-transform -translate-x-full bg-white border-r border-gray-200 shadow-lg sm:translate-x-0 dark:bg-gray-900 dark:border-gray-700"
-      aria-label="Sidebar"
-    >
-      <div className="h-full px-5 pb-6 overflow-y-auto bg-white dark:bg-gray-900">
-        <div className="text-2xl font-bold text-center text-gray-800 dark:text-gray-100 mb-6">
-          Menú Principal
-        </div>
+<aside
+  id="logo-sidebar"
+  className="fixed top-0 left-0 w-72 h-screen pt-20 bg-white border-r border-gray-200 shadow-lg sm:translate-x-0 dark:bg-gray-900 dark:border-gray-700"
+>
+  <div className="h-full px-4 pb-6 overflow-y-auto bg-white dark:bg-gray-900">
+    <br />
+    <div className="text-2xl font-bold text-center text-gray-800 dark:text-gray-100 mb-6">
+      Menú Principal
+    </div>
+    <ul className="space-y-4 font-medium">
+      <SidebarItem to="/home" icon={FcStatistics} label="Dashboard" />
+      <SidebarItem to="/bitacoras" icon={FcKindle} label="Bitácoras" />
+      {userData?.id_rol_per === 1 && (
+        <SidebarItem to="/usuarios" icon={FcBusinessman} label="Usuarios" />
+      )}
+    </ul>
+  </div>
+</aside>
 
-        <ul className="space-y-4 font-medium">
-          <SidebarItem to="/bitacoras" icon={FcKindle} label="Bitácoras" />
-          {userData?.id_rol_per === 1 && (
-            <SidebarItem to="/usuarios" icon={FcBusinessman} label="Usuarios" />
-          )}
-        </ul>
-      </div>
-    </aside>
   );
 };
 

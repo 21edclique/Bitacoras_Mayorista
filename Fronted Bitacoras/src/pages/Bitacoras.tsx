@@ -80,9 +80,11 @@ const Bitacoras = () => {
   }
 
   return (
+    <main className="ml-10 mt-24 p-6 dark:bg-gray-900 dark:text-gray-200 transition-colors duration-300">
     <div className="container mx-auto p-4">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg">
         <div className="p-6">
+          
           <div className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Bitácoras</h1>
             <button
@@ -207,6 +209,7 @@ const Bitacoras = () => {
         handleSubmit={handleSubmit}
       />
     </div>
+    </main>
   )
 }
 
