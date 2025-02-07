@@ -164,10 +164,10 @@ const Bitacoras = () => {
                       <span
                         className={`ml-2 text-gray-900 dark:text-white ${
                           bitacora.resultado === 'Resuelto'
-                            ? 'text-green-600 dark:text-green-400'
+                            ? 'text-green-600 dark:text-green-600'
                             : bitacora.resultado === 'Pendiente'
-                            ? 'text-yellow-600 dark:text-yellow-400'
-                            : 'text-red-600 dark:text-red-500'
+                            ? 'text-yellow-600 dark:text-yellow-600'
+                            : 'text-red-600 dark:text-red-600'
                         }`}
                       >
                         {bitacora.resultado}
