@@ -173,7 +173,7 @@ const Usuarios = () => {
                         <Edit2 size={18} />
                       </IconButton>
                       <IconButton
-                        onClick={() => handleDelete(usuario.id_bitacora)}
+                        onClick={() => handleDelete(usuario.id_usuario)}
                         color="delete"
                         ariaLabel="Eliminar"
                       >

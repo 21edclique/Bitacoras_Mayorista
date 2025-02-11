@@ -1,6 +1,9 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { useBitacoras } from '../hooks/useBitacoras'
 import ModalBitacoras from '../Mod/ModalBitacoras'
+import jsPDF from 'jspdf'
+import html2canvas from 'html2canvas'
+
 import {
   ChevronLeft,
   ChevronRight,
@@ -9,6 +12,7 @@ import {
   Plus,
   Edit2,
   Trash2,
+  Printer,
 } from 'lucide-react'
 
 const IconButton = ({
@@ -56,17 +60,157 @@ const Bitacoras = () => {
     paginate,
     setShowForm,
   } = useBitacoras()
+  const [userRole, setUserRole] = useState<number | null>(null)
 
+  useEffect(() => {
+    const savedUserData = localStorage.getItem('userData')
+    if (savedUserData) {
+      const parsedUser = JSON.parse(savedUserData)
+      setUserRole(parsedUser.id_rol_per)
+    }
+  }, [])
   const [goToPage, setGoToPage] = useState('')
+  const [pdfPreview, setPdfPreview] = useState<string | null>(null)
+  const [selectedBitacora, setSelectedBitacora] = useState<any | null>(null)
+  const pdfRef = useRef<HTMLDivElement>(null)
+
+  const generatePDF = () => {
+    if (!selectedBitacora) {
+      console.error('No hay bitácora seleccionada.')
+      return
+    }
+
+    const pdf = new jsPDF()
+    let y = 20 // Posición inicial
+    const marginLeft = 15
+    const maxWidth = 180 // Ancho máximo del texto sin desbordamiento
+    const lineSpacing = 7 // Espaciado entre líneas
+    const pageHeight = pdf.internal.pageSize.height - 20 // Altura máxima antes de nueva página
+
+    pdf.setFont('helvetica', 'bold')
+    pdf.setFontSize(16)
+    pdf.text('Informe de Bitácora', 105, y, { align: 'center' })
+    y += 7
+
+    pdf.setFontSize(10)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text('Sistema de Monitoreo y Control', 105, y, { align: 'center' })
+    y += 13
+
+    pdf.setFontSize(12)
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('Fecha:', marginLeft, y)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text(String(selectedBitacora.fecha), marginLeft + 30, y)
+
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('Código:', 140, y)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text(String(selectedBitacora.id_bitacora), 165, y)
+    y += lineSpacing
+
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('De:', marginLeft, y)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text(`${selectedBitacora.nombres} (Operador de Monitoreo)`, marginLeft + 30, y)
+    y += lineSpacing
+
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('Para:', marginLeft, y)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text('Ing. Jorge Chicaiza (Analista TIC)', marginLeft + 30, y)
+    y += lineSpacing
+
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('Turno:', marginLeft, y)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text(String(selectedBitacora.turno), marginLeft + 30, y)
+    y += lineSpacing + 5
+
+    pdf.line(marginLeft, y, 195, y)
+    y += lineSpacing
+
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('Detalles de la Novedad:', marginLeft, y)
+    y += lineSpacing
+
+    pdf.setFont('helvetica', 'normal')
+    pdf.text(`Hora: ${String(selectedBitacora.hora)}`, marginLeft, y)
+    pdf.text(`Nave: ${String(selectedBitacora.nombre)}`, marginLeft, y + lineSpacing)
+    pdf.text(`Cámara: ${String(selectedBitacora.camara)}`, marginLeft, y + lineSpacing * 2)
+    pdf.text(
+      `Referencia: ${String(selectedBitacora.referencia)}`,
+      marginLeft,
+      y + lineSpacing * 3,
+    )
+    y += lineSpacing * 4
+
+    pdf.line(marginLeft, y, 195, y)
+    y += lineSpacing
+
+    // Manejo de texto largo en "Novedad"
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('Descripción:', marginLeft, y)
+    y += lineSpacing
+
+    pdf.setFont('helvetica', 'normal')
+    const textLines = pdf.splitTextToSize(String(selectedBitacora.novedad), maxWidth)
+
+    for (let i = 0; i < textLines.length; i++) {
+      if (y + lineSpacing > pageHeight) {
+        pdf.addPage()
+        y = 20
+      }
+      pdf.text(textLines[i], marginLeft, y)
+      y += lineSpacing
+    }
+
+    pdf.line(marginLeft, y, 195, y)
+    y += lineSpacing
+
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('Resultado:', marginLeft, y)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text(String(selectedBitacora.resultado), marginLeft + 30, y)
+    y += lineSpacing * 2
+
+    // Pie de firma
+    if (y + 20 > pageHeight) {
+      pdf.addPage()
+      y = 20
+    }
+
+    pdf.text('__________________________', 70, y)
+    pdf.text(String(selectedBitacora.nombres), 85, y + 5)
+    pdf.setFontSize(10)
+    pdf.text('Operador de Monitoreo', 88, y + 10)
+
+    // Pie de página
+    pdf.setFontSize(8)
+    pdf.text('Documento generado automáticamente - Uso interno', 55, pageHeight - 10)
+
+    pdf.save(`Bitacora_${selectedBitacora.id_bitacora}.pdf`)
+  }
+
+  const handlePrintPDF = (bitacora: any) => {
+    setSelectedBitacora(bitacora)
+
+    // Esperar a que el estado se actualice antes de generar el PDF
+    setTimeout(() => {
+      generatePDF()
+    }, 100)
+  }
+
+  const closePdfPreview = () => {
+    setPdfPreview(null)
+    setSelectedBitacora(null)
+  }
 
   if (loading) return <p>Cargando...</p>
   if (error) return <p>Error: {error}</p>
 
   // Ordenar bitácoras por fecha descendente (más recientes primero)
-  const sortedBitacoras = [...bitacoras].sort(
-    (a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime(),
-  )
-
+  const sortedBitacoras = [...bitacoras].sort((a, b) => b.id_bitacora - a.id_bitacora)
   const totalPages = Math.ceil(sortedBitacoras.length / itemsPerPage)
   const currentItems = sortedBitacoras.slice(
     (currentPage - 1) * itemsPerPage,
@@ -164,10 +308,10 @@ const Bitacoras = () => {
                       <span
                         className={`ml-2 text-gray-900 dark:text-white ${
                           bitacora.resultado === 'Resuelto'
-                            ? 'text-green-600 dark:text-green-600'
+                            ? 'text-green-600 dark:text-green-200'
                             : bitacora.resultado === 'Pendiente'
-                            ? 'text-yellow-600 dark:text-yellow-600'
-                            : 'text-red-600 dark:text-red-600'
+                            ? 'text-yellow-600 dark:text-yellow-200'
+                            : 'text-red-600 dark:text-red-200'
                         }`}
                       >
                         {bitacora.resultado}
@@ -192,19 +336,30 @@ const Bitacoras = () => {
                     <div className="flex justify-end md:col-span-2 lg:col-span-1">
                       <div className="flex gap-2">
                         <IconButton
-                          onClick={() => handleEdit(bitacora)}
-                          color="edit"
-                          ariaLabel="Editar"
+                          onClick={() => handlePrintPDF(bitacora)}
+                          color="default"
+                          ariaLabel="Imprimir PDF"
                         >
-                          <Edit2 size={18} />
+                          <Printer size={18} />
                         </IconButton>
-                        <IconButton
-                          onClick={() => handleDelete(bitacora.id_bitacora)}
-                          color="delete"
-                          ariaLabel="Eliminar"
-                        >
-                          <Trash2 size={18} />
-                        </IconButton>
+                        {userRole === 1 && (
+                          <div className="flex gap-2">
+                            <IconButton
+                              onClick={() => handleEdit(bitacora)}
+                              color="edit"
+                              ariaLabel="Editar"
+                            >
+                              <Edit2 size={18} />
+                            </IconButton>
+                            <IconButton
+                              onClick={() => handleDelete(bitacora.id_bitacora)}
+                              color="delete"
+                              ariaLabel="Eliminar"
+                            >
+                              <Trash2 size={18} />
+                            </IconButton>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -222,66 +377,61 @@ const Bitacoras = () => {
               </p>
 
               <nav className="flex items-center gap-2">
-  {/* Botón ir a primera página */}
-  <button
-    onClick={() => paginate(1)}
-    disabled={currentPage === 1}
-    className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
-  >
-    <ChevronsLeft size={20} />
-  </button>
+                {/* Botón ir a primera página */}
+                <button
+                  onClick={() => paginate(1)}
+                  disabled={currentPage === 1}
+                  className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+                >
+                  <ChevronsLeft size={20} />
+                </button>
 
-  {/* Botón ir a página anterior */}
-  <button
-    onClick={() => paginate(currentPage - 1)}
-    disabled={currentPage === 1}
-    className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
-  >
-    <ChevronLeft size={20} />
-  </button>
+                {/* Botón ir a página anterior */}
+                <button
+                  onClick={() => paginate(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+                >
+                  <ChevronLeft size={20} />
+                </button>
 
-  {/* Botón ir a página siguiente */}
-  <button
-    onClick={() => paginate(currentPage + 1)}
-    disabled={currentPage === totalPages}
-    className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
-  >
-    <ChevronRight size={20} />
-  </button>
+                {/* Botón ir a página siguiente */}
+                <button
+                  onClick={() => paginate(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+                >
+                  <ChevronRight size={20} />
+                </button>
 
-  {/* Botón ir a última página */}
-  <button
-    onClick={() => paginate(totalPages)}
-    disabled={currentPage === totalPages}
-    className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
-  >
-    <ChevronsRight size={20} />
-  </button>
+                {/* Botón ir a última página */}
+                <button
+                  onClick={() => paginate(totalPages)}
+                  disabled={currentPage === totalPages}
+                  className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+                >
+                  <ChevronsRight size={20} />
+                </button>
 
-  {/* Input para ir a página específica */}
-  <input
-    type="number"
-    min="1"
-    max={totalPages}
-    value={goToPage || currentPage}
-    onChange={(e) => setGoToPage(e.target.value)}
-    onKeyPress={(e) => {
-      if (e.key === 'Enter') {
-        const pageNumber = parseInt(goToPage)
-        if (pageNumber >= 1 && pageNumber <= totalPages) paginate(pageNumber)
-      }
-    }}
-    className="w-12 text-center border rounded-md bg-gray-100 dark:bg-gray-900 text-black dark:text-white border-gray-300 dark:border-gray-600"
-  />
+                {/* Input para ir a página específica */}
+                <input
+                  type="number"
+                  min="1"
+                  max={totalPages}
+                  value={goToPage || currentPage}
+                  onChange={(e) => setGoToPage(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      const pageNumber = parseInt(goToPage)
+                      if (pageNumber >= 1 && pageNumber <= totalPages) paginate(pageNumber)
+                    }
+                  }}
+                  className="w-12 text-center border rounded-md bg-gray-100 dark:bg-gray-900 text-black dark:text-white border-gray-300 dark:border-gray-600"
+                />
 
-  {/* Texto "/ totalPages" */}
-  <span className="text-sm text-gray-700 dark:text-gray-200">
-    / {totalPages}
-  </span>
-</nav>
-
-
-
+                {/* Texto "/ totalPages" */}
+                <span className="text-sm text-gray-700 dark:text-gray-200">/ {totalPages}</span>
+              </nav>
             </div>
           </div>
         </div>
