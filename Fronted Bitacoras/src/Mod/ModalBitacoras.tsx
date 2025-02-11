@@ -183,7 +183,7 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
                     type="date"
                     id="fecha"
                     name="fecha"
-                    value={formData.fecha || new Date().toISOString().split('T')[0]}
+                    value={formData.fecha ? formData.fecha.split('T')[0] : new Date().toISOString().split('T')[0]}
                     onChange={handleInputChange}
                     required
                     readOnly
