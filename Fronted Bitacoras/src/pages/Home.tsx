@@ -63,7 +63,7 @@ const Home: React.FC = () => {
   }, [bitacoras])
 
   return (
-    <main className="ml-10 mt-24 p-6 dark:bg-gray-900 dark:text-gray-200 transition-colors duration-300">
+    <main className="ml-10 mt-10 p-10 dark:bg-gray-900 dark:text-gray-200 transition-colors duration-300">
       <div className="max-w-screen-xl mx-auto p-6">
         {loading && (
           <p className="text-center mt-6 text-gray-600 dark:text-gray-300">Cargando datos...</p>
