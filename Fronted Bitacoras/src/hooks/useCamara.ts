@@ -13,7 +13,7 @@ const useCamara = () => {
   const [camaraNames, setCamaraNames] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  console.log("Camara Data from hook:", camaraData);
   // Fetch all camara data
   const fetchCamaraData = async () => {
     setLoading(true);
@@ -27,7 +27,7 @@ const useCamara = () => {
       setCamaraData(response.data);
     } catch (err) {
       setError((err as any).response?.data?.error || 'Error fetching camara data');
-    } finally {
+    } finally { 
       setLoading(false);
     }
   };

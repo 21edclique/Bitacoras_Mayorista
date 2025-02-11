@@ -103,15 +103,36 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
   const [filteredCamaras, setFilteredCamaras] = useState<Camara[]>([])
 
   useEffect(() => {
+    console.log("formData.id_nave_per:", formData.id_nave_per);
+    console.log("camaraData:", camaraData);
+    console.log('formData.camara:', formData.camara)
+  
     if (formData.id_nave_per && camaraData) {
+      // Convierte formData.id_nave_per a número para la comparación
+      const idNavePer = Number(formData.id_nave_per);
+  
+      // Filtra las cámaras según la nave seleccionada
       const filtered = camaraData.filter(
-        (camara) => camara.id_nave_per.toString() === formData.id_nave_per,
-      )
-      setFilteredCamaras(filtered)
+        (camara) => camara.id_nave_per === idNavePer,
+      );
+      console.log("filteredCamaras:", filtered);
+      setFilteredCamaras(filtered);
+  
+      // Verifica si la cámara de la bitácora está en las cámaras filtradas
+      const camaraSeleccionada = filtered.find(
+        (camara) => camara.id_camara === Number(formData.camara),
+      );
+  
+      if (!camaraSeleccionada) {
+        // Si la cámara no está en las cámaras filtradas, resetea el valor
+        handleInputChange({
+          target: { name: 'camara', value: '' },
+        } as React.ChangeEvent<HTMLInputElement>);
+      }
     } else {
-      setFilteredCamaras([])
+      setFilteredCamaras([]);
     }
-  }, [formData.id_nave_per, camaraData])
+  }, [formData.id_nave_per, camaraData, formData.camara]);
 
   useEffect(() => {
     // Solo establecer la fecha y la hora si aún no están definidas
@@ -132,6 +153,8 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
     }
 
     const userData = JSON.parse(localStorage.getItem('userData') || '{}')
+    console.log('Camara Data:', camaraData)
+    console.log('Form Data ID Nave:', formData.id_nave_per)
 
     if (!formData.id_usuario_per) {
       handleInputChange({
@@ -183,11 +206,14 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
                     type="date"
                     id="fecha"
                     name="fecha"
-                    value={formData.fecha ? formData.fecha.split('T')[0] : new Date().toISOString().split('T')[0]}
+                    value={
+                      formData.fecha
+                        ? formData.fecha.split('T')[0]
+                        : new Date().toISOString().split('T')[0]
+                    }
                     onChange={handleInputChange}
                     required
                     readOnly
-                  
                   />
                 </InputWrapper>
 
@@ -228,40 +254,38 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
                 <InputWrapper>
                   <Label htmlFor="nave">Nave</Label>
                   <Select
-                    id="nave"
-                    name="id_nave_per"
-                    value={formData.id_nave_per}
+                    id="camara"
+                    name="camara"
+                    value={formData.camara.toString()} // Asegúrate de que sea un string
                     onChange={handleInputChange}
-                    required
-                    disabled={naveLoading}
+                    disabled={camaraLoading || !formData.id_nave_per}
                   >
-                    <option value="">Seleccione una nave</option>
-                    {naveData.map((nave) => (
-                      <option key={nave.id_nave} value={nave.id_nave}>
-                        {nave.nombre} - Sector {nave.sector}
+                    <option value="">Seleccione una Cámara</option>
+                    {filteredCamaras.map((camara) => (
+                      <option key={camara.id_camara} value={camara.id_camara.toString()}>
+                        {camara.nombre}
                       </option>
                     ))}
                   </Select>
                 </InputWrapper>
 
                 <InputWrapper>
-          <Label htmlFor="camara">Cámara</Label>
-          <Select
-            id="camara"
-            name="camara"
-            value={formData.camara}
-            onChange={handleInputChange}
-            required
-            disabled={camaraLoading || !formData.id_nave_per}
-          >
-            <option value="">Seleccione una Cámara</option>
-            {filteredCamaras.map((camara) => (
-              <option key={camara.id_camara} value={camara.nombre}>
-                {camara.nombre}
-              </option>
-            ))}
-          </Select>
-        </InputWrapper>
+                  <Label htmlFor="camara">Cámara</Label>
+                  <Select
+                    id="camara"
+                    name="camara"
+                    value={formData.camara.toString()} // Asegúrate de que sea un string
+                    onChange={handleInputChange}
+                    disabled={camaraLoading || !formData.id_nave_per}
+                  >
+                    <option value="">Seleccione una Cámara</option>
+                    {filteredCamaras.map((camara) => (
+                      <option key={camara.id_camara} value={camara.id_camara.toString()}>
+                        {camara.nombre}
+                      </option>
+                    ))}
+                  </Select>
+                </InputWrapper>
 
                 <InputWrapper>
                   <Label htmlFor="turno">Turno</Label>
