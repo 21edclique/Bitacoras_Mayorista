@@ -13,7 +13,6 @@ const useCamara = () => {
   const [camaraNames, setCamaraNames] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  console.log("Camara Data from hook:", camaraData);
   // Fetch all camara data
   const fetchCamaraData = async () => {
     setLoading(true);

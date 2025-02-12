@@ -59,7 +59,33 @@ export const useBitacoras = () => {
     const token = localStorage.getItem("token");
     const isDarkMode = document.documentElement.classList.contains("dark");
   
+    if (editMode && currentBitacora) {
+      // Si es una edición, mostrar confirmación antes de guardar
+      Swal.fire({
+        title: "¿Guardar cambios?",
+        text: "Se actualizará la información de la bitácora.",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: isDarkMode ? "#4a90e2" : "#3085d6",
+        cancelButtonColor: isDarkMode ? "#ff4c4c" : "#d33",
+        confirmButtonText: "Sí, actualizar",
+        cancelButtonText: "Cancelar",
+        background: isDarkMode ? "#1e1e1e" : "#ffffff",
+        color: isDarkMode ? "#ffffff" : "#000000",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          await saveBitacora();
+        }
+      });
+    } else {
+      // Si es una nueva, guardarla directamente
+      await saveBitacora();
+    }
+  };
+  
+  const saveBitacora = async () => {
     try {
+      const token = localStorage.getItem("token");
       if (editMode && currentBitacora) {
         await axios.post(
           `${API_URL}/log/bitacora_modificar`,
@@ -100,6 +126,10 @@ export const useBitacoras = () => {
     }
   };
   
+  
+
+
+
   const handleDelete = async (id_bitacora: number) => {
     const token = localStorage.getItem("token");
     const isDarkMode = document.documentElement.classList.contains("dark");

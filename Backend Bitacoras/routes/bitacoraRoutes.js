@@ -48,7 +48,7 @@ router.delete('/bitacora_eliminar/:id_bitacora', authenticateToken, (req, res) =
 
 // Ruta para obtener todas las bitácoras (con información extraída)
 router.get('/bitacora', authenticateToken, (req, res) => {
-  const query = 'SELECT b.id_bitacora, b.fecha, u.nombres, b.hora, CASE WHEN n.id_nave IS NOT NULL THEN n.nombre ELSE NULL END AS nombre, b.camara, b.novedad, b.resultado, b.referencia, b.turno, b.id_nave_per FROM bitacora b INNER JOIN usuario u ON b.id_usuario_per = u.id_usuario LEFT JOIN nave n ON n.id_nave = b.id_nave_per;';
+  const query = 'SELECT b.id_bitacora,b.id_usuario_per, b.fecha, u.nombres, b.hora, CASE WHEN n.id_nave IS NOT NULL THEN n.nombre ELSE NULL END AS nombre, b.camara, b.novedad, b.resultado, b.referencia, b.turno, b.id_nave_per FROM bitacora b INNER JOIN usuario u ON b.id_usuario_per = u.id_usuario LEFT JOIN nave n ON n.id_nave = b.id_nave_per;';
 
   connection.query(query, (err, result) => {
     if (err) {
