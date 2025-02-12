@@ -19,6 +19,7 @@ export const useBitacoras = () => {
     id_usuario_per: '',
     hora: '',
     id_nave_per: '',
+    id_camara: '', 
     camara: '',
     novedad: '',
     resultado: '',
