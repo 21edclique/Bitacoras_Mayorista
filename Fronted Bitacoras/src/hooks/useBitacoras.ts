@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { API_URL } from '../config';
+import Swal from "sweetalert2"
 
 export const useBitacoras = () => {
   const [bitacoras, setBitacoras] = useState<any[]>([]);
@@ -18,6 +19,7 @@ export const useBitacoras = () => {
     id_usuario_per: '',
     hora: '',
     id_nave_per: '',
+    id_camara: '', 
     camara: '',
     novedad: '',
     resultado: '',
@@ -54,9 +56,36 @@ export const useBitacoras = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const token = localStorage.getItem('token');
-
+    const token = localStorage.getItem("token");
+    const isDarkMode = document.documentElement.classList.contains("dark");
+  
+    if (editMode && currentBitacora) {
+      // Si es una edición, mostrar confirmación antes de guardar
+      Swal.fire({
+        title: "¿Guardar cambios?",
+        text: "Se actualizará la información de la bitácora.",
+        icon: "question",
+        showCancelButton: true,
+        confirmButtonColor: isDarkMode ? "#4a90e2" : "#3085d6",
+        cancelButtonColor: isDarkMode ? "#ff4c4c" : "#d33",
+        confirmButtonText: "Sí, actualizar",
+        cancelButtonText: "Cancelar",
+        background: isDarkMode ? "#1e1e1e" : "#ffffff",
+        color: isDarkMode ? "#ffffff" : "#000000",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          await saveBitacora();
+        }
+      });
+    } else {
+      // Si es una nueva, guardarla directamente
+      await saveBitacora();
+    }
+  };
+  
+  const saveBitacora = async () => {
     try {
+      const token = localStorage.getItem("token");
       if (editMode && currentBitacora) {
         await axios.post(
           `${API_URL}/log/bitacora_modificar`,
@@ -68,26 +97,86 @@ export const useBitacoras = () => {
           headers: { Authorization: `Bearer ${token}` },
         });
       }
+  
       setFormData(initialFormState);
       setShowForm(false);
       setEditMode(false);
       fetchBitacoras();
+  
+      const isDarkModeNow = document.documentElement.classList.contains("dark");
+  
+      Swal.fire({
+        title: "Éxito",
+        text: "La bitácora se ha guardado correctamente.",
+        icon: "success",
+        background: isDarkModeNow ? "#1e1e1e" : "#ffffff",
+        color: isDarkModeNow ? "#ffffff" : "#000000",
+      });
     } catch (err) {
-      setError('Error al guardar la bitácora');
+      const isDarkModeNow = document.documentElement.classList.contains("dark");
+  
+      setError("Error al guardar la bitácora");
+      Swal.fire({
+        title: "Error",
+        text: "No se pudo guardar la bitácora.",
+        icon: "error",
+        background: isDarkModeNow ? "#1e1e1e" : "#ffffff",
+        color: isDarkModeNow ? "#ffffff" : "#000000",
+      });
     }
   };
+  
+  
+
+
 
   const handleDelete = async (id_bitacora: number) => {
-    const token = localStorage.getItem('token');
-
-    try {
-      await axios.delete(`${API_URL}/log/bitacora_eliminar/${id_bitacora}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      fetchBitacoras();
-    } catch (err) {
-      setError('Error al eliminar la bitácora');
-    }
+    const token = localStorage.getItem("token");
+    const isDarkMode = document.documentElement.classList.contains("dark");
+  
+    Swal.fire({
+      title: "¿Estás seguro?",
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: isDarkMode ? "#ff4c4c" : "#d33",
+      cancelButtonColor: isDarkMode ? "#4a90e2" : "#3085d6",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+      background: isDarkMode ? "#1e1e1e" : "#ffffff",
+      color: isDarkMode ? "#ffffff" : "#000000",
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          await axios.delete(`${API_URL}/log/bitacora_eliminar/${id_bitacora}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          fetchBitacoras();
+  
+          const isDarkModeNow = document.documentElement.classList.contains("dark");
+  
+          Swal.fire({
+            title: "Eliminado",
+            text: "La bitácora ha sido eliminada.",
+            icon: "success",
+            background: isDarkModeNow ? "#1e1e1e" : "#ffffff",
+            color: isDarkModeNow ? "#ffffff" : "#000000",
+          });
+        } catch (err) {
+          setError("Error al eliminar la bitácora");
+          
+          const isDarkModeNow = document.documentElement.classList.contains("dark");
+  
+          Swal.fire({
+            title: "Error",
+            text: "No se pudo eliminar la bitácora.",
+            icon: "error",
+            background: isDarkModeNow ? "#1e1e1e" : "#ffffff",
+            color: isDarkModeNow ? "#ffffff" : "#000000",
+          });
+        }
+      }
+    });
   };
 
   const handleEdit = (bitacora: any) => {
