@@ -45,91 +45,93 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
-              {Object.entries(fieldsToDisplay).map(([key, label]) => (
-                <div key={key} className="space-y-2">
-                  <label
-                    htmlFor={key}
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-                  >
-                    {label}
-                  </label>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Object.entries(fieldsToDisplay).map(([key, label]) => (
+                  <div key={key} className="space-y-2">
+                    <label
+                      htmlFor={key}
+                      className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                    >
+                      {label}
+                    </label>
 
-                  {key === 'id_rol_per' ? (
-                    <select
-                      id={key}
-                      name={key}
-                      value={formData[key] || ''}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-gray-100"
-                    >
-                      <option value="">Seleccione un rol</option>
-                      <option value="1">Admin</option>
-                      <option value="2">Operador</option>
-                      <option value="3">Gerencia</option>
-                    </select>
-                  ) : key === 'estado' ? (
-                    <select
-                      id={key}
-                      name={key}
-                      value={formData[key] || ''}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-gray-100"
-                    >
-                      <option value="">Seleccione un estado</option>
-                      <option value="A">Activo</option>
-                      <option value="I">Inactivo</option>
-                    </select>
-                  ) : key === 'contrasenia' ? (
-                    <div className="relative">
-                      <input
-                        type={showPassword ? 'text' : 'password'}
+                    {key === 'id_rol_per' ? (
+                      <select
                         id={key}
                         name={key}
                         value={formData[key] || ''}
                         onChange={handleInputChange}
-                        placeholder="Ingrese contraseña"
-                        required={!editMode} // Solo es obligatorio al crear un usuario
+                        required
+                        className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-gray-100"
+                      >
+                        <option value="">Seleccione un rol</option>
+                        <option value="1">Admin</option>
+                        <option value="2">Operador</option>
+                        <option value="3">Gerencia</option>
+                      </select>
+                    ) : key === 'estado' ? (
+                      <select
+                        id={key}
+                        name={key}
+                        value={formData[key] || ''}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-gray-100"
+                      >
+                        <option value="">Seleccione un estado</option>
+                        <option value="A">Activo</option>
+                        <option value="I">Inactivo</option>
+                      </select>
+                    ) : key === 'contrasenia' ? (
+                      <div className="relative">
+                        <input
+                          type={showPassword ? 'text' : 'password'}
+                          id={key}
+                          name={key}
+                          value={formData[key] || ''}
+                          onChange={handleInputChange}
+                          placeholder="Ingrese contraseña"
+                          required={!editMode} // Solo es obligatorio al crear un usuario
+                          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-gray-100"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
+                        >
+                          {showPassword ? <FaEye /> : <FaEyeSlash />}
+                        </button>
+                      </div>
+                    ) : (
+                      <input
+                        type="text"
+                        id={key}
+                        name={key}
+                        value={formData[key] || ''}
+                        onChange={handleInputChange}
+                        placeholder={`Ingrese ${label.toLowerCase()}`}
+                        required
                         className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-gray-100"
                       />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500"
-                      >
-                        {showPassword ? <FaEye /> : <FaEyeSlash />}
-                      </button>
-                    </div>
-                  ) : (
-                    <input
-                      type="text"
-                      id={key}
-                      name={key}
-                      value={formData[key] || ''}
-                      onChange={handleInputChange}
-                      placeholder={`Ingrese ${label.toLowerCase()}`}
-                      required
-                      className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-gray-100"
-                    />
-                  )}
-                </div>
-              ))}
+                    )}
+                  </div>
+                ))}
 
-              <div className="flex justify-end gap-3 mt-6">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 rounded-lg text-white bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
-                >
-                  {editMode ? 'Actualizar' : 'Guardar'}
-                </button>
+                <div className="flex justify-end gap-3 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => setShowModal(false)}
+                    className="px-4 py-2 rounded-lg text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded-lg text-white bg-blue-500 hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+                  >
+                    {editMode ? 'Actualizar' : 'Guardar'}
+                  </button>
+                </div>
               </div>
             </form>
           </div>
