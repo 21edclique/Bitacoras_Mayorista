@@ -1,9 +1,8 @@
-import React, { useState, useRef, useEffect } from 'react'
-import { useBitacoras } from '../hooks/useBitacoras'
-import ModalBitacoras from '../Mod/ModalBitacoras'
-import jsPDF from 'jspdf'
-import html2canvas from 'html2canvas'
-
+import React, { useState, useRef, useEffect } from 'react';
+import { useBitacoras } from '../hooks/useBitacoras';
+import ModalBitacoras from '../Mod/ModalBitacoras';
+import jsPDF from 'jspdf';
+import PdfPreviewModal from '../Mod/PdfPreviewModal';  // Ajusta la ruta según tu estructura
 import {
   ChevronLeft,
   ChevronRight,
@@ -13,7 +12,7 @@ import {
   Edit2,
   Trash2,
   Printer,
-} from 'lucide-react'
+} from 'lucide-react';
 
 const IconButton = ({
   children,
@@ -21,16 +20,16 @@ const IconButton = ({
   color = 'default',
   ariaLabel,
 }: {
-  children: React.ReactNode
-  onClick: () => void
-  color?: 'default' | 'edit' | 'delete'
-  ariaLabel: string
+  children: React.ReactNode;
+  onClick: () => void;
+  color?: 'default' | 'edit' | 'delete';
+  ariaLabel: string;
 }) => {
   const colorStyles = {
     default: 'text-gray-600 hover:bg-gray-200 dark:text-gray-300 dark:hover:bg-gray-700',
     edit: 'text-yellow-600 hover:bg-yellow-100 dark:text-yellow-400 dark:hover:bg-yellow-900',
     delete: 'text-red-600 hover:bg-red-100 dark:text-red-400 dark:hover:bg-red-900',
-  }
+  };
   return (
     <button
       onClick={onClick}
@@ -39,8 +38,8 @@ const IconButton = ({
     >
       {children}
     </button>
-  )
-}
+  );
+};
 
 const Bitacoras = () => {
   const {
@@ -59,163 +58,189 @@ const Bitacoras = () => {
     handleEdit,
     paginate,
     setShowForm,
-  } = useBitacoras()
-  const [userRole, setUserRole] = useState<number | null>(null)
+  } = useBitacoras();
+  const [userRole, setUserRole] = useState<number | null>(null);
 
   useEffect(() => {
-    const savedUserData = localStorage.getItem('userData')
+    const savedUserData = localStorage.getItem('userData');
     if (savedUserData) {
-      const parsedUser = JSON.parse(savedUserData)
-      setUserRole(parsedUser.id_rol_per)
+      const parsedUser = JSON.parse(savedUserData);
+      setUserRole(parsedUser.id_rol_per);
     }
-  }, [])
-  const [goToPage, setGoToPage] = useState('')
-  const [pdfPreview, setPdfPreview] = useState<string | null>(null)
-  const [selectedBitacora, setSelectedBitacora] = useState<any | null>(null)
-  const pdfRef = useRef<HTMLDivElement>(null)
+  }, []);
+  const [goToPage, setGoToPage] = useState('');
+  const [pdfPreview, setPdfPreview] = useState<string | null>(null);
+  const [selectedBitacora, setSelectedBitacora] = useState<any | null>(null);
+  const pdfRef = useRef<HTMLDivElement>(null);
 
   const generatePDF = () => {
     if (!selectedBitacora) {
-      console.error('No hay bitácora seleccionada.')
-      return
+      console.error('No hay bitácora seleccionada.');
+      return;
     }
 
-    const pdf = new jsPDF()
-    let y = 20 // Posición inicial
-    const marginLeft = 15
-    const maxWidth = 180 // Ancho máximo del texto sin desbordamiento
-    const lineSpacing = 7 // Espaciado entre líneas
-    const pageHeight = pdf.internal.pageSize.height - 20 // Altura máxima antes de nueva página
+    const pdf = new jsPDF();
+    let y = 20; // Posición inicial
+    const marginLeft = 15;
+    const maxWidth = 180; // Ancho máximo del texto sin desbordamiento
+    const lineSpacing = 7; // Espaciado entre líneas
+    const pageHeight = pdf.internal.pageSize.height - 20; // Altura máxima antes de nueva página
 
-    pdf.setFont('helvetica', 'bold')
-    pdf.setFontSize(16)
-    pdf.text('Informe de Bitácora', 105, y, { align: 'center' })
-    y += 7
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(16);
+    pdf.text('Informe de Bitácora', 105, y, { align: 'center' });
+    y += 7;
 
-    pdf.setFontSize(10)
-    pdf.setFont('helvetica', 'normal')
-    pdf.text('Sistema de Monitoreo y Control', 105, y, { align: 'center' })
-    y += 13
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('Sistema de Monitoreo y Control', 105, y, { align: 'center' });
+    y += 13;
 
-    pdf.setFontSize(12)
-    pdf.setFont('helvetica', 'bold')
-    pdf.text('Fecha:', marginLeft, y)
-    pdf.setFont('helvetica', 'normal')
-    pdf.text(String(selectedBitacora.fecha), marginLeft + 30, y)
 
-    pdf.setFont('helvetica', 'bold')
-    pdf.text('Código:', 140, y)
-    pdf.setFont('helvetica', 'normal')
-    pdf.text(String(selectedBitacora.id_bitacora), 165, y)
-    y += lineSpacing
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Identificador Bitacora:', marginLeft, y);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`${selectedBitacora.id_bitacora} `, marginLeft + 60, y);
+    y += lineSpacing;
 
-    pdf.setFont('helvetica', 'bold')
-    pdf.text('De:', marginLeft, y)
-    pdf.setFont('helvetica', 'normal')
-    pdf.text(`${selectedBitacora.nombres} (Operador de Monitoreo)`, marginLeft + 30, y)
-    y += lineSpacing
+  
+   
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Fecha:', marginLeft, y);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(String(selectedBitacora.fecha.split('T')[0]), marginLeft + 30, y); // Formatear la fecha
+    y += lineSpacing;
 
-    pdf.setFont('helvetica', 'bold')
-    pdf.text('Para:', marginLeft, y)
-    pdf.setFont('helvetica', 'normal')
-    pdf.text('Ing. Jorge Chicaiza (Analista TIC)', marginLeft + 30, y)
-    y += lineSpacing
+    
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('De:', marginLeft, y);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`${selectedBitacora.nombres} `, marginLeft + 30, y);
+    y += lineSpacing;
 
-    pdf.setFont('helvetica', 'bold')
-    pdf.text('Turno:', marginLeft, y)
-    pdf.setFont('helvetica', 'normal')
-    pdf.text(String(selectedBitacora.turno), marginLeft + 30, y)
-    y += lineSpacing + 5
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Para:', marginLeft, y);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text('Ing. Jorge Chicaiza (Analista TIC)', marginLeft + 30, y);
+    y += lineSpacing;
 
-    pdf.line(marginLeft, y, 195, y)
-    y += lineSpacing
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Asunto:', marginLeft, y);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(String("Informe diario de Bitácora"), marginLeft + 30, y);
+    y += lineSpacing + 5;
 
-    pdf.setFont('helvetica', 'bold')
-    pdf.text('Detalles de la Novedad:', marginLeft, y)
-    y += lineSpacing
+    pdf.line(marginLeft, y, 195, y);
+    y += lineSpacing;
 
-    pdf.setFont('helvetica', 'normal')
-    pdf.text(`Hora: ${String(selectedBitacora.hora)}`, marginLeft, y)
-    pdf.text(`Nave: ${String(selectedBitacora.nombre)}`, marginLeft, y + lineSpacing)
-    pdf.text(`Cámara: ${String(selectedBitacora.camara)}`, marginLeft, y + lineSpacing * 2)
-    pdf.text(
-      `Referencia: ${String(selectedBitacora.referencia)}`,
-      marginLeft,
-      y + lineSpacing * 3,
-    )
-    y += lineSpacing * 4
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Detalles de la Novedad:', marginLeft, y);
+    y += lineSpacing;
 
-    pdf.line(marginLeft, y, 195, y)
-    y += lineSpacing
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Hora:', marginLeft, y);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`${String(selectedBitacora.hora)}`, marginLeft + 30, y);
+    y += lineSpacing;
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Nave:', marginLeft, y);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`${String(selectedBitacora.nombre)}`, marginLeft + 30, y);
+    y += lineSpacing;
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Cámara:', marginLeft, y);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`${String(selectedBitacora.camara)}`, marginLeft + 30, y);
+    y += lineSpacing;
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Turno:', marginLeft, y);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`${String(selectedBitacora.turno)}`, marginLeft + 30, y);
+    y += lineSpacing;
+
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Referencia:', marginLeft, y);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`${String(selectedBitacora.referencia)}`, marginLeft + 30, y);
+    y += lineSpacing;
+
+    pdf.line(marginLeft, y, 195, y);
+    y += lineSpacing;
 
     // Manejo de texto largo en "Novedad"
-    pdf.setFont('helvetica', 'bold')
-    pdf.text('Descripción:', marginLeft, y)
-    y += lineSpacing
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Descripción:', marginLeft, y);
+    y += lineSpacing;
 
-    pdf.setFont('helvetica', 'normal')
-    const textLines = pdf.splitTextToSize(String(selectedBitacora.novedad), maxWidth)
+    pdf.setFont('helvetica', 'normal');
+    const textLines = pdf.splitTextToSize(String(selectedBitacora.novedad), maxWidth);
 
     for (let i = 0; i < textLines.length; i++) {
       if (y + lineSpacing > pageHeight) {
-        pdf.addPage()
-        y = 20
+        pdf.addPage();
+        y = 20;
       }
-      pdf.text(textLines[i], marginLeft, y)
-      y += lineSpacing
+      pdf.text(textLines[i], marginLeft, y);
+      y += lineSpacing;
     }
 
-    pdf.line(marginLeft, y, 195, y)
-    y += lineSpacing
+    pdf.line(marginLeft, y, 195, y);
+    y += lineSpacing;
 
-    pdf.setFont('helvetica', 'bold')
-    pdf.text('Resultado:', marginLeft, y)
-    pdf.setFont('helvetica', 'normal')
-    pdf.text(String(selectedBitacora.resultado), marginLeft + 30, y)
-    y += lineSpacing * 2
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Resultado:', marginLeft, y);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(String(selectedBitacora.resultado), marginLeft + 30, y);
+    y += lineSpacing * 5;
 
     // Pie de firma
     if (y + 20 > pageHeight) {
-      pdf.addPage()
-      y = 20
+      pdf.addPage();
+      y = 20;
     }
 
-    pdf.text('__________________________', 70, y)
-    pdf.text(String(selectedBitacora.nombres), 85, y + 5)
-    pdf.setFontSize(10)
-    pdf.text('Operador de Monitoreo', 88, y + 10)
+    pdf.text('__________________________', 105, y, { align: 'center' });
+    pdf.text(String(selectedBitacora.nombres), 105, y + 5, { align: 'center' });
+    pdf.setFontSize(10);
 
     // Pie de página
-    pdf.setFontSize(8)
-    pdf.text('Documento generado automáticamente - Uso interno', 55, pageHeight - 10)
+    pdf.setFontSize(8);
+    pdf.text('Documento generado automáticamente - Uso interno', 105, pageHeight - 10, { align: 'center' });
 
-    pdf.save(`Bitacora_${selectedBitacora.id_bitacora}.pdf`)
-  }
+    pdf.save(`Bitacora_${selectedBitacora.id_bitacora}.pdf`);
+  };
+
+  const [showPdfPreview, setShowPdfPreview] = useState(false);
 
   const handlePrintPDF = (bitacora: any) => {
-    setSelectedBitacora(bitacora)
+    setSelectedBitacora(bitacora);
+    setShowPdfPreview(true);
+  };
 
-    // Esperar a que el estado se actualice antes de generar el PDF
-    setTimeout(() => {
-      generatePDF()
-    }, 100)
-  }
+  const handleDownloadPDF = () => {
+    generatePDF();
+    setShowPdfPreview(false);
+  };
 
   const closePdfPreview = () => {
-    setPdfPreview(null)
-    setSelectedBitacora(null)
-  }
+    setPdfPreview(null);
+    setSelectedBitacora(null);
+  };
 
-  if (loading) return <p>Cargando...</p>
-  if (error) return <p>Error: {error}</p>
+  if (loading) return <p>Cargando...</p>;
+  if (error) return <p>Error: {error}</p>;
 
   // Ordenar bitácoras por fecha descendente (más recientes primero)
-  const sortedBitacoras = [...bitacoras].sort((a, b) => b.id_bitacora - a.id_bitacora)
-  const totalPages = Math.ceil(sortedBitacoras.length / itemsPerPage)
+  const sortedBitacoras = [...bitacoras].sort((a, b) => b.id_bitacora - a.id_bitacora);
+  const totalPages = Math.ceil(sortedBitacoras.length / itemsPerPage);
   const currentItems = sortedBitacoras.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage,
-  )
+  );
 
   return (
     <main className="ml-10 mt-10 p-10 dark:bg-gray-900 dark:text-gray-200 transition-colors duration-300">
@@ -227,8 +252,8 @@ const Bitacoras = () => {
               <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Bitácoras</h1>
               <button
                 onClick={() => {
-                  handleAddBitacora()
-                  setShowForm(true)
+                  handleAddBitacora();
+                  setShowForm(true);
                 }}
                 className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
               >
@@ -258,7 +283,7 @@ const Bitacoras = () => {
                         Fecha:
                       </span>
                       <span className="ml-2 text-gray-900 dark:text-gray-100">
-                        {bitacora.fecha}
+                        {bitacora.fecha.split('T')[0]} {/* Formatear la fecha */}
                       </span>
                     </div>
                     <div>
@@ -308,10 +333,10 @@ const Bitacoras = () => {
                       <span
                         className={`ml-2 text-gray-900 dark:text-white ${
                           bitacora.resultado === 'Resuelto'
-                            ? 'text-green-600 dark:text-green-200'
+                            ? 'text-green-600 dark:text-green-600'
                             : bitacora.resultado === 'Pendiente'
-                            ? 'text-yellow-600 dark:text-yellow-200'
-                            : 'text-red-600 dark:text-red-200'
+                            ? 'text-yellow-600 dark:text-yellow-600'
+                            : 'text-red-600 dark:text-red-600'
                         }`}
                       >
                         {bitacora.resultado}
@@ -422,8 +447,8 @@ const Bitacoras = () => {
                   onChange={(e) => setGoToPage(e.target.value)}
                   onKeyPress={(e) => {
                     if (e.key === 'Enter') {
-                      const pageNumber = parseInt(goToPage)
-                      if (pageNumber >= 1 && pageNumber <= totalPages) paginate(pageNumber)
+                      const pageNumber = parseInt(goToPage);
+                      if (pageNumber >= 1 && pageNumber <= totalPages) paginate(pageNumber);
                     }
                   }}
                   className="w-12 text-center border rounded-md bg-gray-100 dark:bg-gray-900 text-black dark:text-white border-gray-300 dark:border-gray-600"
@@ -445,9 +470,16 @@ const Bitacoras = () => {
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
         />
+        {/* PDF Preview Modal */}
+        <PdfPreviewModal
+          isOpen={showPdfPreview}
+          onClose={() => setShowPdfPreview(false)}
+          selectedBitacora={selectedBitacora}
+          onDownload={handleDownloadPDF}
+        />
       </div>
     </main>
-  )
-}
+  );
+};
 
-export default Bitacoras
+export default Bitacoras;

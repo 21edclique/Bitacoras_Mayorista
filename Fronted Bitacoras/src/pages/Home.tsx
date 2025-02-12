@@ -155,6 +155,9 @@ const Home: React.FC = () => {
                   <thead>
                     <tr className="bg-gray-100 dark:bg-gray-800 border-b border-gray-300 dark:border-gray-700">
                       <th className="px-4 py-2 text-left text-gray-700 dark:text-gray-200">
+                        ID
+                      </th>
+                      <th className="px-4 py-2 text-left text-gray-700 dark:text-gray-200">
                         Fecha
                       </th>
                       <th className="px-4 py-2 text-left text-gray-700 dark:text-gray-200">
@@ -174,14 +177,18 @@ const Home: React.FC = () => {
 
                   <tbody>
                     {bitacoras
+
                       .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()) // Ordenar por fecha DESC (más reciente primero)
 
-                      .slice(0, 5) // Tomar los últimos 5 registros
+                      .slice(0,5) // Tomar los últimos 5 registros
                       .map(({ id_bitacora, fecha, turno, camara, novedad, resultado }) => (
                         <tr
                           key={id_bitacora}
                           className="border-b border-gray-300 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-800"
                         >
+                          <td className="px-4 py-2 text-gray-800 dark:text-gray-300">
+                            {id_bitacora}
+                          </td>
                           <td className="px-4 py-2 text-gray-800 dark:text-gray-300">
                             {new Date(fecha).toLocaleDateString()}
                           </td>

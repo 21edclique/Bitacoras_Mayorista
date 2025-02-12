@@ -60,28 +60,46 @@ export const useBitacoras = () => {
     const isDarkMode = document.documentElement.classList.contains("dark");
   
     if (editMode && currentBitacora) {
-      // Si es una edición, mostrar confirmación antes de guardar
+      // Confirmación antes de guardar
       Swal.fire({
         title: "¿Guardar cambios?",
         text: "Se actualizará la información de la bitácora.",
         icon: "question",
         showCancelButton: true,
-        confirmButtonColor: isDarkMode ? "#4a90e2" : "#3085d6",
-        cancelButtonColor: isDarkMode ? "#ff4c4c" : "#d33",
+        confirmButtonColor: isDarkMode ? "#4a90e2" : "#3085d6", // Azul claro en modo oscuro
+        cancelButtonColor: isDarkMode ? "#ff4c4c" : "#d33", // Rojo más visible en modo oscuro
         confirmButtonText: "Sí, actualizar",
         cancelButtonText: "Cancelar",
-        background: isDarkMode ? "#1e1e1e" : "#ffffff",
-        color: isDarkMode ? "#ffffff" : "#000000",
+        background: isDarkMode ? "#1e1e1e" : "#ffffff", // Fondo oscuro para modo oscuro
+        color: isDarkMode ? "#ffffff" : "#000000", // Texto blanco en modo oscuro
       }).then(async (result) => {
         if (result.isConfirmed) {
           await saveBitacora();
+          // Mensaje de éxito adaptado al modo oscuro
+          Swal.fire({
+            title: "Actualizado",
+            text: "La bitácora se ha actualizado correctamente.",
+            icon: "success",
+            confirmButtonColor: isDarkMode ? "#4CAF50" : "#3085d6", // Verde claro en modo oscuro
+            background: isDarkMode ? "#1e1e1e" : "#ffffff",
+            color: isDarkMode ? "#ffffff" : "#000000",
+          });
         }
       });
     } else {
-      // Si es una nueva, guardarla directamente
       await saveBitacora();
+      // Mensaje de éxito para nueva bitácora
+      Swal.fire({
+        title: "Guardado",
+        text: "La bitácora se ha guardado correctamente.",
+        icon: "success",
+        confirmButtonColor: isDarkMode ? "#4CAF50" : "#3085d6",
+        background: isDarkMode ? "#1e1e1e" : "#ffffff",
+        color: isDarkMode ? "#ffffff" : "#000000",
+      });
     }
   };
+  
   
   const saveBitacora = async () => {
     try {
@@ -139,8 +157,8 @@ export const useBitacoras = () => {
       text: "Esta acción no se puede deshacer.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: isDarkMode ? "#ff4c4c" : "#d33",
-      cancelButtonColor: isDarkMode ? "#4a90e2" : "#3085d6",
+      confirmButtonColor: isDarkMode ? "#ff4c4c" : "#d33", // Rojo intenso en modo oscuro
+      cancelButtonColor: isDarkMode ? "#4a90e2" : "#3085d6", // Azul en modo oscuro
       confirmButtonText: "Sí, eliminar",
       cancelButtonText: "Cancelar",
       background: isDarkMode ? "#1e1e1e" : "#ffffff",
@@ -151,26 +169,28 @@ export const useBitacoras = () => {
           await axios.delete(`${API_URL}/log/bitacora_eliminar/${id_bitacora}`, {
             headers: { Authorization: `Bearer ${token}` },
           });
-          fetchBitacoras();
+          fetchBitacoras(); // Refresca la lista tras eliminar
   
           const isDarkModeNow = document.documentElement.classList.contains("dark");
   
           Swal.fire({
             title: "Eliminado",
-            text: "La bitácora ha sido eliminada.",
+            text: "La bitácora ha sido eliminada correctamente.",
             icon: "success",
+            confirmButtonColor: isDarkModeNow ? "#4CAF50" : "#3085d6", // Verde en modo oscuro
             background: isDarkModeNow ? "#1e1e1e" : "#ffffff",
             color: isDarkModeNow ? "#ffffff" : "#000000",
           });
         } catch (err) {
           setError("Error al eliminar la bitácora");
-          
+  
           const isDarkModeNow = document.documentElement.classList.contains("dark");
   
           Swal.fire({
             title: "Error",
             text: "No se pudo eliminar la bitácora.",
             icon: "error",
+            confirmButtonColor: isDarkModeNow ? "#ff4c4c" : "#d33", // Rojo para error
             background: isDarkModeNow ? "#1e1e1e" : "#ffffff",
             color: isDarkModeNow ? "#ffffff" : "#000000",
           });
@@ -178,6 +198,7 @@ export const useBitacoras = () => {
       }
     });
   };
+  
 
   const handleEdit = (bitacora: any) => {
     setFormData(bitacora);
