@@ -78,7 +78,7 @@ const Home: React.FC = () => {
                 { label: 'Total Novedades', value: totalNovedades, color: 'text-blue-500' },
                 { label: 'Turnos Activos', value: turnosActivos, color: 'text-green-500' },
                 { label: 'Resueltas', value: novedadesResueltas, color: 'text-purple-500' },
-                { label: 'Pendientes', value: novedadesPendientes, color: 'text-red-500' },
+                { label: 'Pendientes/No Resuelats', value: novedadesPendientes, color: 'text-red-500' },
               ].map(({ label, value, color }) => (
                 <div
                   key={label}
@@ -147,7 +147,7 @@ const Home: React.FC = () => {
             {/* Tabla de novedades recientes */}
             <div className="bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 mt-6">
               <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 text-center mb-4">
-                Últimas Novedades
+                Novedades Pendientes o No Resueltas
               </h3>
 
               <div className="overflow-x-auto">
@@ -177,10 +177,9 @@ const Home: React.FC = () => {
 
                   <tbody>
                     {bitacoras
-
+                      .filter((b) => b.resultado !== 'Resuelto') 
                       .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime()) // Ordenar por fecha DESC (más reciente primero)
-
-                      .slice(0,5) // Tomar los últimos 5 registros
+                      // Tomar los últimos 10 registros
                       .map(({ id_bitacora, fecha, turno, camara, novedad, resultado }) => (
                         <tr
                           key={id_bitacora}

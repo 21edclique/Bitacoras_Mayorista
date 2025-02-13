@@ -35,6 +35,12 @@ type Nave = {
   productos: string
 }
 
+type TimeRestriction = {
+  hours: number
+  minutes: number
+}
+
+
 type Camara = {
   id_camara: number
   nombre: string
@@ -103,23 +109,27 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
   const { naveData, loading: naveLoading } = useNave()
   const { camaraData, loading: camaraLoading } = useCamara()
   const { usuarios } = useUsuarios() // Usa el hook de usuarios
-  // Estado para almacenar el nombre del usuario original
-  const [nombreUsuarioOriginal, setNombreUsuarioOriginal] = useState('')
-
   // Filter cameras based on selected nave
   const [filteredCamaras, setFilteredCamaras] = useState<Camara[]>([])
-
+  const [userRole, setUserRole] = useState<number>(0)
 
   useEffect(() => {
-    if (editMode) {
-      console.log("formData al abrir modal en edición:", formData);
+    if (!showForm) {
+      // Resetear el formulario cuando se cierra
+      handleInputChange({
+        target: { 
+          name: 'id_nave_per', 
+          value: '' 
+        },
+      } as React.ChangeEvent<HTMLInputElement>)
     }
-  }, [editMode, formData]);
+  }, [showForm])
   
   // Obtener el nombre del usuario original en modo de edición
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('userData') || '{}');
-  
+  // console.log(userData);
+  setUserRole(userData.id_rol_per || 0)
     if (!editMode && !formData.id_usuario_per) {
       handleInputChange({
         target: { name: 'id_usuario_per', value: userData.id_usuario?.toString() || '' },
@@ -127,7 +137,18 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
     }
   }, [formData.id_usuario_per, editMode]);
   
+  const hasRestrictedAccess = editMode && userRole !== 1
 
+  const isFieldDisabled = (fieldName: string): boolean => {
+    // Only apply restrictions if we're in edit mode
+    if (!editMode) return false;
+    
+    // If user is admin, no restrictions
+    if (userRole === 1) return false;
+    
+    // In edit mode for non-admin users, restrict certain fields
+    return hasRestrictedAccess;
+  }
 
   useEffect(() => {
     if (formData.id_nave_per && camaraData.length > 0) {
@@ -207,7 +228,7 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
         (usuario) => usuario.id_usuario === Number(formData.id_usuario_per)
       );
   
-      console.log("🔵 Usuario encontrado en edición:", usuarioOriginal);
+      // console.log("🔵 Usuario encontrado en edición:", usuarioOriginal);
   
       return usuarioOriginal ? usuarioOriginal.nombres : `Usuario ID: ${formData.id_usuario_per}`;
     }
@@ -297,7 +318,7 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
                     value={formData.id_nave_per}
                     onChange={handleInputChange}
                     // required
-                    disabled={naveLoading}
+                    disabled={naveLoading || isFieldDisabled('nave')}
                   >
                     <option value="">Seleccione una nave</option>
                     {naveData.map((nave) => (
@@ -315,7 +336,7 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
                     name="camara"
                     value={formData.camara || ''} // Convertir siempre a string
                     onChange={handleInputChange}
-                    disabled={camaraLoading || !formData.id_nave_per}
+                    disabled={camaraLoading || !formData.id_nave_per ||isFieldDisabled('nave')}
                   >
                     <option value="">Seleccione una Cámara</option>
                     {filteredCamaras.map((camara) => (
@@ -334,6 +355,7 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
                     value={formData.turno}
                     onChange={handleInputChange}
                     required
+                    disabled={isFieldDisabled('turno')}
                   >
                     <option value="">Seleccione un turno</option>
                     <option value="1">Turno 1</option>

@@ -54,6 +54,9 @@ export const useBitacoras = () => {
 
   };
 
+
+
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
@@ -200,6 +203,53 @@ export const useBitacoras = () => {
   };
   
 
+  
+  const handleResolveBitacora = async (id_bitacora: number) => {
+    const token = localStorage.getItem("token");
+    const isDarkMode = document.documentElement.classList.contains("dark");
+
+    try {
+      await axios.post(
+        `${API_URL}/log/bitacora_mod_resultado`,
+        { 
+          id_bitacora,
+          resultado: 'Resuelto'
+        },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      // Actualizar el estado local
+      setBitacoras(prevBitacoras => 
+        prevBitacoras.map(bitacora => 
+          bitacora.id_bitacora === id_bitacora
+            ? { ...bitacora, resultado: 'Resuelto' }
+            : bitacora
+        )
+      );
+
+      Swal.fire({
+        title: "Actualizado",
+        text: "La bitácora ha sido marcada como resuelta.",
+        icon: "success",
+        confirmButtonColor: isDarkMode ? "#4CAF50" : "#3085d6",
+        background: isDarkMode ? "#1e1e1e" : "#ffffff",
+        color: isDarkMode ? "#ffffff" : "#000000",
+      });
+
+    } catch (err) {
+      setError("Error al actualizar el estado de la bitácora");
+      
+      Swal.fire({
+        title: "Error",
+        text: "No se pudo actualizar el estado de la bitácora.",
+        icon: "error",
+        confirmButtonColor: isDarkMode ? "#ff4c4c" : "#d33",
+        background: isDarkMode ? "#1e1e1e" : "#ffffff",
+        color: isDarkMode ? "#ffffff" : "#000000",
+      });
+    }
+  };
+
   const handleEdit = (bitacora: any) => {
     setFormData(bitacora);
     setEditMode(true);
@@ -208,7 +258,24 @@ export const useBitacoras = () => {
   };
 
   const handleAddBitacora = () => {
-    setFormData(initialFormState); // Limpia los datos al agregar una nueva
+    const savedUserData = localStorage.getItem('userData');
+    const parsedUser = savedUserData ? JSON.parse(savedUserData) : null;
+  
+    setEditMode(false); // Asegurarse de que editMode está en false
+    setFormData({
+      // Resetear el formData
+      fecha: '',
+      id_usuario_per: parsedUser.id_usuario, // Asegúrate de que parsedUser.id_usuario esté definido
+      hora: '',
+      id_camara: '',
+      id_nave_per: '',
+      camara: '',
+      novedad: '',
+      resultado: '',
+      referencia: '',
+      turno: '',
+    });
+    setShowForm(true);
   };
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
@@ -231,6 +298,7 @@ export const useBitacoras = () => {
     fetchBitacoras,
     handleInputChange,
     handleAddBitacora,
+    handleResolveBitacora,
     handleSubmit,
     handleDelete,
     handleEdit,

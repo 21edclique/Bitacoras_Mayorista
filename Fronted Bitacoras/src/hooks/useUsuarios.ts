@@ -59,6 +59,20 @@ export const useUsuarios = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    if (name === "cedula") {
+      if (!/^\d*$/.test(value)) return; // Solo números
+      if (value.length > 10) return; // Máximo 10 caracteres
+    }
+  
+    if (name === "telefono") {
+      if (!/^\d*$/.test(value)) return; // Solo números
+      if (value.length > 10) return; // Máximo 10 caracteres
+    }
+  
+    if (name === "usuario") {
+      if (value.length > 15) return; // Máximo 15 caracteres
+    }
+  
     setFormData({ ...formData, [name]: value });
   };
 
@@ -102,6 +116,9 @@ export const useUsuarios = () => {
 
             const isDarkModeNow = document.documentElement.classList.contains("dark");
 
+
+
+            
             Swal.fire({
               title: "Actualizado",
               text: "El usuario ha sido actualizado.",

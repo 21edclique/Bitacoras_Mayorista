@@ -32,6 +32,25 @@ router.post('/bitacora_modificar', authenticateToken, (req, res) => {
   });
 });
 
+
+// Ruta para modificar solo el resultado de la bitácora
+router.post('/bitacora_mod_resultado', authenticateToken, (req, res) => {
+  const { resultado, id_bitacora } = req.body;
+
+  const query = 'UPDATE bitacora SET resultado = ? WHERE id_bitacora = ?';
+  
+  connection.query(query, [resultado, id_bitacora], (err, result) => {
+    if (err) {
+      console.error('Error al actualizar el resultado en la base de datos:', err);
+      return res.status(500).json({ error: 'Error al actualizar el resultado en la base de datos' });
+    }
+    res.json({ message: 'Resultado de bitácora actualizado correctamente' });
+  });
+});
+
+
+
+
 // Ruta para eliminar bitácora
 router.delete('/bitacora_eliminar/:id_bitacora', authenticateToken, (req, res) => {
   const id_bitacora = req.params.id_bitacora;
