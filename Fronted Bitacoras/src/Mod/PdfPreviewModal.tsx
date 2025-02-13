@@ -17,6 +17,7 @@ interface PdfPreviewModalProps {
     referencia: string
     novedad: string
     resultado: string
+    nombre_colega?: string // Nuevo campo opcional para el compañero
   } | null
   onDownload: () => void
 }
@@ -31,8 +32,9 @@ const PdfPreviewModal: React.FC<PdfPreviewModalProps> = ({
 
   // Formatear la fecha para mostrar solo YYYY-MM-DD
   const formattedFecha = selectedBitacora.fecha.split('T')[0]
-  const year = new Date(selectedBitacora.fecha).getFullYear();
+  const year = new Date(selectedBitacora.fecha).getFullYear()
   const bitacoraId = selectedBitacora.id_bitacora // Reemplázalo con el ID dinámico de la bitácora
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 dark:bg-opacity-70">
       <div className="flex min-h-screen items-center justify-center p-4">
@@ -54,10 +56,9 @@ const PdfPreviewModal: React.FC<PdfPreviewModalProps> = ({
           <div className="p-6 space-y-6">
             <div className="bg-white dark:bg-gray-800 p-8 rounded-lg shadow space-y-6">
               {/* Header */}
-
               <div className="text-center space-y-2">
                 <h1 className="text-2xl text-gray-900 dark:text-gray-300">
-                EP-EMA-OPERVIG-{year}-{bitacoraId}
+                  EP-EMA-OPERVIG-{year}-{bitacoraId}
                 </h1>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
                   Sistema de Monitoreo y Control
@@ -69,17 +70,20 @@ const PdfPreviewModal: React.FC<PdfPreviewModalProps> = ({
                 <img src={EpemaBalck} alt="Epema Logo" className="h-20 dark:hidden" />
                 <img src={EpemaWhite} alt="Epema Logo" className="h-20 hidden dark:block" />
               </div>
+
               {/* Information Grid */}
               <div className="grid grid-cols-2 gap-4 text-gray-800 dark:text-gray-300">
                 <div>
-                  
                   <p>
                     <span className="font-bold">Fecha:</span> {formattedFecha}
-                  </p>{' '}
-                  {/* Usar la fecha formateada */}
+                  </p>
                   <p>
                     <span className="font-bold">De:</span> {selectedBitacora.nombres}
                   </p>
+                  {/* Mostrar el nombre del colega debajo si existe */}
+                  {selectedBitacora.nombre_colega && (
+                    <p>{selectedBitacora.nombre_colega}</p>
+                  )}
                   <p>
                     <span className="font-bold">Para:</span> Ing. Jorge Chicaiza (Analista TIC)
                   </p>
@@ -88,7 +92,6 @@ const PdfPreviewModal: React.FC<PdfPreviewModalProps> = ({
                   </p>
                 </div>
               </div>
-
               <hr className="border-gray-300 dark:border-gray-600" />
 
               {/* Details */}
@@ -126,10 +129,22 @@ const PdfPreviewModal: React.FC<PdfPreviewModalProps> = ({
 
               {/* Signature */}
               <div className="mt-12 text-center space-y-2">
-                <div className="border-t border-gray-300 dark:border-gray-600 w-48 mx-auto pt-4">
-                  <p className=" text-gray-800 dark:text-gray-200">
-                    {selectedBitacora.nombres}
-                  </p>
+                <div className="flex justify-center gap-8">
+                  {/* Firma del usuario principal */}
+                  <div className="border-t border-gray-300 dark:border-gray-600 w-48 pt-4">
+                    <p className="text-gray-800 dark:text-gray-200">
+                      {selectedBitacora.nombres}
+                    </p>
+                  </div>
+
+                  {/* Firma del compañero si existe */}
+                  {selectedBitacora.nombre_colega && (
+                    <div className="border-t border-gray-300 dark:border-gray-600 w-48 pt-4">
+                      <p className="text-gray-800 dark:text-gray-200">
+                        {selectedBitacora.nombre_colega}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

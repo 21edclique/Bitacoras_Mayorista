@@ -25,6 +25,7 @@ export const useBitacoras = () => {
     resultado: '',
     referencia: '',
     turno: '',
+    id_colega:'',
   };
 
   const [formData, setFormData] = useState(initialFormState);
@@ -274,6 +275,7 @@ export const useBitacoras = () => {
       resultado: '',
       referencia: '',
       turno: '',
+      id_colega: '',
     });
     setShowForm(true);
   };
