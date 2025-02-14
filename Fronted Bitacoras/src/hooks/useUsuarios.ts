@@ -59,144 +59,177 @@ export const useUsuarios = () => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
+    if (name === "cedula") {
+      if (!/^\d*$/.test(value)) return; // Solo números
+      if (value.length > 10) return; // Máximo 10 caracteres
+    }
+  
+    if (name === "telefono") {
+      if (!/^\d*$/.test(value)) return; // Solo números
+      if (value.length > 10) return; // Máximo 10 caracteres
+    }
+  
+    if (name === "usuario") {
+      if (value.length > 15) return; // Máximo 15 caracteres
+    }
+
+    if (name === "direccion") {
+      if (value.length > 244) return; // Máximo 15 caracteres
+    }
+  
+    if (name === "cargo") {
+      if (value.length > 100) return; // Máximo 15 caracteres
+    }
+    if (name === "nombres") {
+      if (value.length > 244) return; // Máximo 15 caracteres
+    }
+  
     setFormData({ ...formData, [name]: value });
   };
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const token = localStorage.getItem('token');
 
-    try {
-      if (editMode && currentUsuario) {
-        // Detectar si el modo oscuro está activo en el momento de ejecutar la función
-        const isDarkMode = document.documentElement.classList.contains("dark");
 
-        Swal.fire({
-          title: "¿Estás seguro?",
-          text: "¿Deseas actualizar este usuario?",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonColor: isDarkMode ? "#ff4c4c" : "#d33", // Rojo oscuro en modo oscuro
-          cancelButtonColor: isDarkMode ? "#4a90e2" : "#3085d6", // Azul oscuro en modo oscuro
-          confirmButtonText: "Sí, actualizar",
-          cancelButtonText: "Cancelar",
-          background: isDarkMode ? "#1e1e1e" : "#ffffff", // Fondo oscuro o claro
-          color: isDarkMode ? "#ffffff" : "#000000", // Texto blanco o negro
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            try {
-              await axios.post(
-                `${API_URL}/users/usuario_modificar`,
-                { ...formData, id_usuario: currentUsuario.id_usuario },
-                { headers: { Authorization: `Bearer ${token}` } }
-              );
-              setSuccessMessage('Usuario actualizado con éxito');
-              console.log('Usuario actualizado:', formData);
+ const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  const token = localStorage.getItem("token");
 
-              setTimeout(() => setSuccessMessage(null), 3000); // Mensaje desaparece en 3s
-              setFormData(initialFormState);
-              setShowModal(false);
-              setEditMode(false);
-              fetchUsuarios();
+  try {
+    if (editMode && currentUsuario) {
+      const isDarkMode = document.documentElement.classList.contains("dark");
 
-              // Volver a obtener el modo oscuro en caso de que haya cambiado
-              const isDarkModeNow = document.documentElement.classList.contains("dark");
+      Swal.fire({
+        title: "¿Estás seguro?",
+        text: "¿Deseas actualizar este usuario?",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: isDarkMode ? "#ff4c4c" : "#d33", // Rojo oscuro en modo oscuro
+        cancelButtonColor: isDarkMode ? "#4a90e2" : "#3085d6", // Azul en modo oscuro
+        confirmButtonText: "Sí, actualizar",
+        cancelButtonText: "Cancelar",
+        background: isDarkMode ? "#1e1e1e" : "#ffffff",
+        color: isDarkMode ? "#ffffff" : "#000000",
+      }).then(async (result) => {
+        if (result.isConfirmed) {
+          try {
+            await axios.post(
+              `${API_URL}/users/usuario_modificar`,
+              { ...formData, id_usuario: currentUsuario.id_usuario },
+              { headers: { Authorization: `Bearer ${token}` } }
+            );
 
-              Swal.fire({
-                title: "Actualizado",
-                text: "El usuario ha sido actualizado.",
-                icon: "success",
-                background: isDarkModeNow ? "#1e1e1e" : "#ffffff",
-                color: isDarkModeNow ? "#ffffff" : "#000000",
-              });
-            } catch (err) {
-              setError('Error al actualizar el usuario');
+            setSuccessMessage("Usuario actualizado con éxito");
+            console.log("Usuario actualizado:", formData);
+            setTimeout(() => setSuccessMessage(null), 3000);
 
-              // Volver a obtener el modo oscuro en caso de que haya cambiado
-              const isDarkModeNow = document.documentElement.classList.contains("dark");
+            setFormData(initialFormState);
+            setShowModal(false);
+            setEditMode(false);
+            fetchUsuarios();
 
-              Swal.fire({
-                title: "Error",
-                text: "No se pudo actualizar el usuario.",
-                icon: "error",
-                background: isDarkModeNow ? "#1e1e1e" : "#ffffff",
-                color: isDarkModeNow ? "#ffffff" : "#000000",
-              });
-            }
+            const isDarkModeNow = document.documentElement.classList.contains("dark");
+
+
+
+            
+            Swal.fire({
+              title: "Actualizado",
+              text: "El usuario ha sido actualizado.",
+              icon: "success",
+              confirmButtonColor: isDarkModeNow ? "#4CAF50" : "#3085d6", // Verde éxito en modo oscuro
+              background: isDarkModeNow ? "#1e1e1e" : "#ffffff",
+              color: isDarkModeNow ? "#ffffff" : "#000000",
+            });
+          } catch (err) {
+            setError("Error al actualizar el usuario");
+
+            const isDarkModeNow = document.documentElement.classList.contains("dark");
+
+            Swal.fire({
+              title: "Error",
+              text: "No se pudo actualizar el usuario.",
+              icon: "error",
+              confirmButtonColor: isDarkModeNow ? "#ff4c4c" : "#d33", // Rojo en modo oscuro
+              background: isDarkModeNow ? "#1e1e1e" : "#ffffff",
+              color: isDarkModeNow ? "#ffffff" : "#000000",
+            });
           }
-        });
-      } else {
-        await axios.post(`${API_URL}/users/usuario_add`, formData, {
+        }
+      });
+    } else {
+      await axios.post(`${API_URL}/users/usuario_add`, formData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setSuccessMessage("Usuario agregado con éxito");
+      setTimeout(() => setSuccessMessage(null), 3000);
+
+      setFormData(initialFormState);
+      setShowModal(false);
+      setEditMode(false);
+      fetchUsuarios();
+    }
+  } catch (err) {
+    setError("Error al guardar el usuario");
+  }
+};
+
+
+const handleDelete = async (id_usuario: number) => {
+  const token = localStorage.getItem("token");
+
+  const isDarkMode = document.documentElement.classList.contains("dark");
+
+  Swal.fire({
+    title: "¿Estás seguro?",
+    text: "Esta acción no se puede deshacer.",
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: isDarkMode ? "#ff4c4c" : "#d33", // Rojo oscuro en modo oscuro
+    cancelButtonColor: isDarkMode ? "#4a90e2" : "#3085d6", // Azul en modo oscuro
+    confirmButtonText: "Sí, eliminar",
+    cancelButtonText: "Cancelar",
+    background: isDarkMode ? "#1e1e1e" : "#ffffff",
+    color: isDarkMode ? "#ffffff" : "#000000",
+  }).then(async (result) => {
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(`${API_URL}/users/usuario_eliminar/${id_usuario}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setSuccessMessage('Usuario agregado con éxito');
-        setTimeout(() => setSuccessMessage(null), 3000); // Mensaje desaparece en 3s
-        setFormData(initialFormState);
-        setShowModal(false);
-        setEditMode(false);
-        fetchUsuarios();
-      }
-    } catch (err) {
-      setError('Error al guardar el usuario');
-    }
-  };
 
-  const handleDelete = async (id_usuario: number) => {
-    const token = localStorage.getItem("token");
-  
-    // Detectar si el modo oscuro está activo en el momento de ejecutar la función
-    const isDarkMode = document.documentElement.classList.contains("dark");
-  
-    Swal.fire({
-      title: "¿Estás seguro?",
-      text: "Esta acción no se puede deshacer.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: isDarkMode ? "#ff4c4c" : "#d33", // Rojo oscuro en modo oscuro
-      cancelButtonColor: isDarkMode ? "#4a90e2" : "#3085d6", // Azul oscuro en modo oscuro
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar",
-      background: isDarkMode ? "#1e1e1e" : "#ffffff", // Fondo oscuro o claro
-      color: isDarkMode ? "#ffffff" : "#000000", // Texto blanco o negro
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await axios.delete(`${API_URL}/users/usuario_eliminar/${id_usuario}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-  
-          setSuccessMessage("Usuario eliminado con éxito");
-          console.log("Usuario eliminado:", id_usuario);
-  
-          setTimeout(() => setSuccessMessage(null), 3000);
-          fetchUsuarios();
-  
-          // Volver a obtener el modo oscuro en caso de que haya cambiado
-          const isDarkModeNow = document.documentElement.classList.contains("dark");
-  
-          Swal.fire({
-            title: "Eliminado",
-            text: "El usuario ha sido eliminado.",
-            icon: "success",
-            background: isDarkModeNow ? "#1e1e1e" : "#ffffff",
-            color: isDarkModeNow ? "#ffffff" : "#000000",
-          });
-        } catch (err) {
-          setError("Error al eliminar el usuario");
-  
-          // Volver a obtener el modo oscuro en caso de que haya cambiado
-          const isDarkModeNow = document.documentElement.classList.contains("dark");
-  
-          Swal.fire({
-            title: "Error",
-            text: "No se pudo eliminar el usuario.",
-            icon: "error",
-            background: isDarkModeNow ? "#1e1e1e" : "#ffffff",
-            color: isDarkModeNow ? "#ffffff" : "#000000",
-          });
-        }
+        setSuccessMessage("Usuario eliminado con éxito");
+        console.log("Usuario eliminado:", id_usuario);
+
+        setTimeout(() => setSuccessMessage(null), 3000);
+        fetchUsuarios();
+
+        const isDarkModeNow = document.documentElement.classList.contains("dark");
+
+        Swal.fire({
+          title: "Eliminado",
+          text: "El usuario ha sido eliminado.",
+          icon: "success",
+          confirmButtonColor: isDarkModeNow ? "#4CAF50" : "#3085d6", // Verde éxito en modo oscuro
+          background: isDarkModeNow ? "#1e1e1e" : "#ffffff",
+          color: isDarkModeNow ? "#ffffff" : "#000000",
+        });
+      } catch (err) {
+        setError("Error al eliminar el usuario");
+
+        const isDarkModeNow = document.documentElement.classList.contains("dark");
+
+        Swal.fire({
+          title: "Error",
+          text: "No se pudo eliminar el usuario.",
+          icon: "error",
+          confirmButtonColor: isDarkModeNow ? "#ff4c4c" : "#d33", // Rojo en modo oscuro
+          background: isDarkModeNow ? "#1e1e1e" : "#ffffff",
+          color: isDarkModeNow ? "#ffffff" : "#000000",
+        });
       }
-    });
-  };
+    }
+  });
+};
+
 
   const handleEdit = (usuario: any) => {
     setFormData({

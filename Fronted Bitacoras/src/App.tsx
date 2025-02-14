@@ -13,6 +13,7 @@ const App: React.FC = () => {
   const [token, setToken] = useState<string | null>(null)
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(window.innerWidth >= 1024)
 
+  // Efecto para manejar el estado del token y los datos del usuario
   useEffect(() => {
     const savedToken = localStorage.getItem('token')
     const savedUserData = localStorage.getItem('userData')
@@ -21,7 +22,10 @@ const App: React.FC = () => {
       setToken(savedToken)
       setUserData(JSON.parse(savedUserData))
     }
+  }, [])
 
+  // Efecto para manejar el tamaño de la pantalla y el estado del Sidebar
+  useEffect(() => {
     const handleResize = () => {
       setIsSidebarOpen(window.innerWidth >= 1024)
     }
@@ -30,6 +34,7 @@ const App: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  // Función para cerrar sesión
   const handleLogout = useCallback(() => {
     localStorage.removeItem('token')
     localStorage.removeItem('userData')
@@ -38,6 +43,7 @@ const App: React.FC = () => {
     window.location.href = '/login'
   }, [])
 
+  // Si no hay token, redirigir al login
   if (!token) {
     return (
       <Router>
@@ -54,16 +60,18 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <div className="flex h-screen bg-gray-100 dark:bg-gray-900 overflow-hidden">
-        {/* Sidebar responsivo con animación */}
+      <div className="flex h-screen bg-gray-100 dark:bg-gray-900">
+        {/* Sidebar responsivo */}
         <Sidebar
           userData={userData}
           isOpen={isSidebarOpen}
           toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+          isMobile={window.innerWidth < 1024}
         />
 
+        {/* Contenido principal */}
         <div
-          className={`flex-1 flex flex-col transition-all duration-300 ${
+          className={`flex-1 flex flex-col transition-all duration-300 overflow-hidden ${
             isSidebarOpen ? 'lg:ml-64' : 'ml-0'
           }`}
         >
@@ -71,18 +79,20 @@ const App: React.FC = () => {
           <Navbar
             handleLogout={handleLogout}
             toggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+            isSidebarOpen={isSidebarOpen}
+            isMobile={window.innerWidth < 1024}
           />
 
-          {/* Contenido principal adaptado */}
-          <main className="flex-1 overflow-y-auto p-1 pt-200 w-full h-full flex flex-col">
+          {/* Contenido principal con scroll horizontal en móviles */}
+          <main
+            className="flex-1 overflow-x-auto overflow-y-auto p-10 max-w-full"
+          >
             <Routes>
               <Route path="/home" element={<Home />} />
               <Route path="/bitacoras" element={<Bitacoras />} />
               <Route
                 path="/usuarios"
-                element={
-                  userData?.id_rol_per === 1 ? <Usuarios /> : <Navigate to="/bitacoras" />
-                }
+                element={userData?.id_rol_per === 1 ? <Usuarios /> : <Navigate to="/bitacoras" />}
               />
               <Route path="*" element={<Navigate to="/home" />} />
             </Routes>

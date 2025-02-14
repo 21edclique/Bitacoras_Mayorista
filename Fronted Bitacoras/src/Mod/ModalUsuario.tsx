@@ -1,16 +1,17 @@
-import React, { useState } from 'react'
-import { X } from 'lucide-react'
-import { FaEye, FaEyeSlash } from 'react-icons/fa'
+import React, { useState } from 'react';
+import { X } from 'lucide-react';
+import { FaEye, FaEyeSlash } from 'react-icons/fa';
 
 type ModalUsuarioProps = {
-  showModal: boolean
-  setShowModal: (show: boolean) => void
-  editMode: boolean
-  formData: { [key: string]: string }
-  handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void
-  handleSubmit: (e: React.FormEvent) => void
-  fieldsToDisplay: { [key: string]: string }
-}
+  showModal: boolean;
+  setShowModal: (show: boolean) => void;
+  editMode: boolean;
+  formData: { [key: string]: string };
+  handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  handleSubmit: (e: React.FormEvent) => void;
+  fieldsToDisplay: { [key: string]: string };
+  usuariosRegistrados: any[]; // Lista de usuarios registrados
+};
 
 const ModalUsuario: React.FC<ModalUsuarioProps> = ({
   showModal,
@@ -20,14 +21,35 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({
   handleInputChange,
   handleSubmit,
   fieldsToDisplay,
+  usuariosRegistrados,
 }) => {
-  const [showPassword, setShowPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
 
-  if (!showModal) return null
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Verificar si la cédula ya está registrada
+    const cedula = formData['cedula']; // Asegúrate de que 'cedula' sea el nombre correcto del campo
+    const cedulaExistente = usuariosRegistrados.some(usuario => usuario.cedula === cedula);
+
+    if (cedulaExistente && !editMode) {
+      setError('La cédula ya está registrada.');
+      return;
+    }
+
+    // Limpiar el mensaje de error si no hay problemas
+    setError('');
+
+    // Ejecutar la función handleSubmit si la cédula no está registrada
+    handleSubmit(e);
+  };
+
+  if (!showModal) return null;
 
   return (
-    <div className="fixed inset-20 z-50 overflow-y-auto">
-      <div className="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+  <div className="flex min-h-full items-center justify-center p-4 text-center sm:block sm:p-0">
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 transition-opacity" />
 
         <div className="inline-block w-full max-w-2xl transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 text-left align-bottom shadow-xl transition-all">
@@ -44,7 +66,7 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleFormSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {Object.entries(fieldsToDisplay).map(([key, label]) => (
                   <div key={key} className="space-y-2">
@@ -65,7 +87,7 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({
                         className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-gray-100"
                       >
                         <option value="">Seleccione un rol</option>
-                        <option value="1">Admin</option>
+                        <option value="1">Administrador</option>
                         <option value="2">Operador</option>
                         <option value="3">Gerencia</option>
                       </select>
@@ -92,6 +114,7 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({
                           onChange={handleInputChange}
                           placeholder="Ingrese contraseña"
                           required={!editMode} // Solo es obligatorio al crear un usuario
+                          maxLength={20}
                           className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-gray-100"
                         />
                         <button
@@ -117,6 +140,12 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({
                   </div>
                 ))}
 
+                {error && (
+                  <div className="col-span-2 text-red-500 text-sm">
+                    {error}
+                  </div>
+                )}
+
                 <div className="flex justify-end gap-3 mt-6">
                   <button
                     type="button"
@@ -138,7 +167,7 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default ModalUsuario
+export default ModalUsuario;
