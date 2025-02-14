@@ -72,6 +72,17 @@ export const useUsuarios = () => {
     if (name === "usuario") {
       if (value.length > 15) return; // Máximo 15 caracteres
     }
+
+    if (name === "direccion") {
+      if (value.length > 244) return; // Máximo 15 caracteres
+    }
+  
+    if (name === "cargo") {
+      if (value.length > 100) return; // Máximo 15 caracteres
+    }
+    if (name === "nombres") {
+      if (value.length > 244) return; // Máximo 15 caracteres
+    }
   
     setFormData({ ...formData, [name]: value });
   };

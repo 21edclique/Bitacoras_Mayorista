@@ -18,7 +18,7 @@ export const useBitacoras = () => {
     fecha: '',
     id_usuario_per: '',
     hora: '',
-    id_nave_per: '',
+    id_nave_per: 0,
     id_camara: '', 
     camara: '',
     novedad: '',
@@ -269,7 +269,7 @@ export const useBitacoras = () => {
       id_usuario_per: parsedUser.id_usuario, // Asegúrate de que parsedUser.id_usuario esté definido
       hora: '',
       id_camara: '',
-      id_nave_per: '',
+      id_nave_per: 0,
       camara: '',
       novedad: '',
       resultado: '',

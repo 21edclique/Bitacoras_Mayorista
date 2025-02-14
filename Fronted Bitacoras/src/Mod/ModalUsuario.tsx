@@ -48,8 +48,8 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({
   if (!showModal) return null;
 
   return (
-    <div className="fixed inset-20 z-50 overflow-y-auto">
-      <div className="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+  <div className="flex min-h-full items-center justify-center p-4 text-center sm:block sm:p-0">
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 transition-opacity" />
 
         <div className="inline-block w-full max-w-2xl transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 text-left align-bottom shadow-xl transition-all">
@@ -114,6 +114,7 @@ const ModalUsuario: React.FC<ModalUsuarioProps> = ({
                           onChange={handleInputChange}
                           placeholder="Ingrese contraseña"
                           required={!editMode} // Solo es obligatorio al crear un usuario
+                          maxLength={20}
                           className="w-full rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-gray-900 dark:text-gray-100"
                         />
                         <button

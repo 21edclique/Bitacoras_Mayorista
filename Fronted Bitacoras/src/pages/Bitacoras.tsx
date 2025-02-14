@@ -81,171 +81,171 @@ const Bitacoras = () => {
 
   const generatePDF = () => {
     if (!selectedBitacora) {
-      console.error('No hay bitácora seleccionada.');
-      return;
+      console.error('No hay bitácora seleccionada.')
+      return
     }
-  
-    const pdf = new jsPDF();
-    let y = 5; // Posición inicial
-    const marginLeft = 15;
-    const maxWidth = 180; // Ancho máximo del texto sin desbordamiento
-    const lineSpacing = 5; // Espaciado entre líneas
-    const pageHeight = pdf.internal.pageSize.height - 20; // Altura máxima antes de nueva página
-    const imageWidth = 20;
-    const imageHeight = 20;
-    const pageWidth = pdf.internal.pageSize.width;
-    const textX = pageWidth / 2; // Centrar texto en la página
-  
-    const year = new Date(selectedBitacora.fecha).getFullYear(); // Obtiene el año actual
-    const bitacoraId = selectedBitacora.id_bitacora; // Reemplaza con el ID dinámico de la bitácora
-    y += 10;
-  
-    pdf.setFont('helvetica', 'bold');
-    pdf.setFontSize(16);
-    pdf.text(`EP-EMA-OPERVIG-${year}-${bitacoraId}`, textX, y, { align: 'center' });
-    y += 7;
-  
-    pdf.setFontSize(10);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text('Sistema de Monitoreo y Control', textX, y, { align: 'center' });
-    y += 2;
-  
+
+    const pdf = new jsPDF()
+    let y = 5 // Posición inicial
+    const marginLeft = 15
+    const maxWidth = 180 // Ancho máximo del texto sin desbordamiento
+    const lineSpacing = 5 // Espaciado entre líneas
+    const pageHeight = pdf.internal.pageSize.height - 20 // Altura máxima antes de nueva página
+    const imageWidth = 20
+    const imageHeight = 20
+    const pageWidth = pdf.internal.pageSize.width
+    const textX = pageWidth / 2 // Centrar texto en la página
+
+    const year = new Date(selectedBitacora.fecha).getFullYear() // Obtiene el año actual
+    const bitacoraId = selectedBitacora.id_bitacora // Reemplaza con el ID dinámico de la bitácora
+    y += 10
+
+    pdf.setFont('helvetica', 'bold')
+    pdf.setFontSize(16)
+    pdf.text(`EP-EMA-OPERVIG-${year}-${bitacoraId}`, textX, y, { align: 'center' })
+    y += 7
+
+    pdf.setFontSize(10)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text('Sistema de Monitoreo y Control', textX, y, { align: 'center' })
+    y += 2
+
     // Agregar el logo debajo del texto
-    pdf.addImage(EpemaBalck, 'PNG', (pageWidth - imageWidth) / 2, y, imageWidth, imageHeight);
-    y += imageHeight + 10;
-  
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Fecha:', marginLeft, y);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(String(selectedBitacora.fecha.split('T')[0]), marginLeft + 30, y);
-    y += lineSpacing;
-  
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('De:', marginLeft, y);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(`${selectedBitacora.nombres}`, marginLeft + 30, y);
-    y += lineSpacing; // Incrementa la posición y después de escribir el primer nombre
-    
+    pdf.addImage(EpemaBalck, 'PNG', (pageWidth - imageWidth) / 2, y, imageWidth, imageHeight)
+    y += imageHeight + 10
+
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('Fecha:', marginLeft, y)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text(String(selectedBitacora.fecha.split('T')[0]), marginLeft + 30, y)
+    y += lineSpacing
+
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('De:', marginLeft, y)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text(`${selectedBitacora.nombres}`, marginLeft + 30, y)
+    y += lineSpacing // Incrementa la posición y después de escribir el primer nombre
+
     // Si existe un compañero, escribir su nombre debajo
     if (selectedBitacora.nombre_colega) {
-      pdf.text(`${selectedBitacora.nombre_colega}`, marginLeft + 30, y);
-      y += lineSpacing; // Incrementa la posición y después de escribir el nombre del compañero
+      pdf.text(`${selectedBitacora.nombre_colega}`, marginLeft + 30, y)
+      y += lineSpacing // Incrementa la posición y después de escribir el nombre del compañero
     }
-  
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Para:', marginLeft, y);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text('Ing. Jorge Chicaiza (Analista TIC)', marginLeft + 30, y);
-    y += lineSpacing;
-  
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Asunto:', marginLeft, y);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text('Informe diario de Bitácora', marginLeft + 30, y);
-    y += lineSpacing;
-  
-    pdf.line(marginLeft, y, 195, y);
-    y += lineSpacing;
-  
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Detalles de la Novedad:', marginLeft, y);
-    y += lineSpacing;
-  
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Hora:', marginLeft, y);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(`${selectedBitacora.hora}`, marginLeft + 30, y);
-    y += lineSpacing;
-  
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Nave:', marginLeft, y);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(`${selectedBitacora.nombre}`, marginLeft + 30, y);
-    y += lineSpacing;
-  
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Cámara:', marginLeft, y);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(`${selectedBitacora.camara}`, marginLeft + 30, y);
-    y += lineSpacing;
-  
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Turno:', marginLeft, y);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(`${selectedBitacora.turno}`, marginLeft + 30, y);
-    y += lineSpacing;
-  
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Referencia:', marginLeft, y);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(`${selectedBitacora.referencia}`, marginLeft + 30, y);
-    y += lineSpacing;
-  
-    pdf.line(marginLeft, y, 195, y);
-    y += lineSpacing;
-  
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Descripción:', marginLeft, y);
-    y += lineSpacing;
-  
-    pdf.setFont('helvetica', 'normal');
-    const textLines = pdf.splitTextToSize(selectedBitacora.novedad, maxWidth);
-  
+
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('Para:', marginLeft, y)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text('Ing. Jorge Chicaiza (Analista TIC)', marginLeft + 30, y)
+    y += lineSpacing
+
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('Asunto:', marginLeft, y)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text('Informe diario de Bitácora', marginLeft + 30, y)
+    y += lineSpacing
+
+    pdf.line(marginLeft, y, 195, y)
+    y += lineSpacing
+
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('Detalles de la Novedad:', marginLeft, y)
+    y += lineSpacing
+
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('Hora:', marginLeft, y)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text(`${selectedBitacora.hora}`, marginLeft + 30, y)
+    y += lineSpacing
+
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('Nave:', marginLeft, y)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text(`${selectedBitacora.nombre}`, marginLeft + 30, y)
+    y += lineSpacing
+
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('Cámara:', marginLeft, y)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text(`${selectedBitacora.camara}`, marginLeft + 30, y)
+    y += lineSpacing
+
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('Turno:', marginLeft, y)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text(`${selectedBitacora.turno}`, marginLeft + 30, y)
+    y += lineSpacing
+
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('Referencia:', marginLeft, y)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text(`${selectedBitacora.referencia}`, marginLeft + 30, y)
+    y += lineSpacing
+
+    pdf.line(marginLeft, y, 195, y)
+    y += lineSpacing
+
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('Descripción:', marginLeft, y)
+    y += lineSpacing
+
+    pdf.setFont('helvetica', 'normal')
+    const textLines = pdf.splitTextToSize(selectedBitacora.novedad, maxWidth)
+
     for (let i = 0; i < textLines.length; i++) {
       if (y + lineSpacing > pageHeight) {
-        pdf.addPage();
-        y = 20;
+        pdf.addPage()
+        y = 20
       }
-      pdf.text(textLines[i], marginLeft, y);
-      y += lineSpacing;
+      pdf.text(textLines[i], marginLeft, y)
+      y += lineSpacing
     }
-  
-    pdf.line(marginLeft, y, 195, y);
-    y += lineSpacing;
-  
-    pdf.setFont('helvetica', 'bold');
-    pdf.text('Resultado:', marginLeft, y);
-    pdf.setFont('helvetica', 'normal');
-    pdf.text(selectedBitacora.resultado, marginLeft + 30, y);
-    y += lineSpacing * 5;
-  
+
+    pdf.line(marginLeft, y, 195, y)
+    y += lineSpacing
+
+    pdf.setFont('helvetica', 'bold')
+    pdf.text('Resultado:', marginLeft, y)
+    pdf.setFont('helvetica', 'normal')
+    pdf.text(selectedBitacora.resultado, marginLeft + 30, y)
+    y += lineSpacing * 5
+
     // Verificar si existe un colega
     if (selectedBitacora.nombre_colega) {
       if (y + 20 > pageHeight) {
-        pdf.addPage();
-        y = 20;
+        pdf.addPage()
+        y = 20
       }
-  
+
       // Firma del usuario principal
-      pdf.text('__________________________', 50, y, { align: 'center' });
-      pdf.text(selectedBitacora.nombres, 50, y + 5, { align: 'center' });
-  
+      pdf.text('__________________________', 50, y, { align: 'center' })
+      pdf.text(selectedBitacora.nombres, 50, y + 5, { align: 'center' })
+
       // Firma del colega
-      pdf.text('__________________________', 150, y, { align: 'center' });
-      pdf.text(selectedBitacora.nombre_colega, 150, y + 5, { align: 'center' });
-  
-      y += lineSpacing * 5; // Espacio adicional después de las firmas
+      pdf.text('__________________________', 150, y, { align: 'center' })
+      pdf.text(selectedBitacora.nombre_colega, 150, y + 5, { align: 'center' })
+
+      y += lineSpacing * 5 // Espacio adicional después de las firmas
     } else {
       if (y + 20 > pageHeight) {
-        pdf.addPage();
-        y = 20;
+        pdf.addPage()
+        y = 20
       }
-  
+
       // Solo firma del usuario principal
-      pdf.text('__________________________', 105, y, { align: 'center' });
-      pdf.text(selectedBitacora.nombres, 105, y + 5, { align: 'center' });
-  
-      y += lineSpacing * 5; // Espacio adicional después de la firma
+      pdf.text('__________________________', 105, y, { align: 'center' })
+      pdf.text(selectedBitacora.nombres, 105, y + 5, { align: 'center' })
+
+      y += lineSpacing * 5 // Espacio adicional después de la firma
     }
-  
+
     // Pie de página
-    pdf.setFontSize(8);
+    pdf.setFontSize(8)
     pdf.text('Documento generado automáticamente - Uso interno', 105, pageHeight - 10, {
       align: 'center',
-    });
-  
-    pdf.save(`Bitacora_${selectedBitacora.id_bitacora}.pdf`);
-  };
+    })
+
+    pdf.save(`Bitacora_${selectedBitacora.id_bitacora}.pdf`)
+  }
 
   const [showPdfPreview, setShowPdfPreview] = useState(false)
 
@@ -279,8 +279,8 @@ const Bitacoras = () => {
   const today = new Date().toISOString().split('T')[0]
 
   return (
-    <main className="ml-10 mt-10 p-10 dark:bg-gray-900 dark:text-gray-200 transition-colors duration-300">
-      <div className="container mx-auto p-4">
+<main className="p-2 sm:p-2 md:p-2 lg:p-2 dark:bg-gray-900 dark:text-gray-200">
+<div className="container mx-auto p-10">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg">
           <div className="p-6">
             {/* Encabezado */}
@@ -303,7 +303,6 @@ const Bitacoras = () => {
               {currentItems.map((bitacora) => {
                 // Verificar si la bitácora fue creada por el usuario y es del día actual
                 const isBitacoraFromUser = bitacora.id_usuario_per === userId
-                // console.log("id del creador de la bitacora ",bitacora.id_usuario_per);
                 // Función para verificar si la bitácora fue creada dentro de las últimas 9 horas
                 const isBitacoraWithinLast9Hours = (bitacora: any) => {
                   // Combinar fecha y hora en una cadena ISO válida
@@ -322,11 +321,7 @@ const Bitacoras = () => {
                   const diferenciaEnHoras = diferenciaEnMilisegundos / (1000 * 60 * 60)
 
                   // Depuración
-                  // console.log('🔵 Fecha y hora de creación:', fechaHoraCreacion)
-                  // console.log('🔵 Objeto Date de creación:', fechaCreacion)
-                  // console.log('🔵 Hora actual:', ahora)
-                  // console.log('🔵 Diferencia en horas:', diferenciaEnHoras)
-
+                  
                   // Verificar si la diferencia es menor o igual a 9 horas
                   return diferenciaEnHoras <= 9
                 }
@@ -408,10 +403,10 @@ const Bitacoras = () => {
                         <span
                           className={`ml-2 text-gray-900 dark:text-white ${
                             bitacora.resultado === 'Resuelto'
-                              ? 'text-green-600 dark:text-green-500'
+                              ? 'text-green-600 dark:text-green-600'
                               : bitacora.resultado === 'Pendiente'
-                              ? 'text-yellow-600 dark:text-yellow-500'
-                              : 'text-red-600 dark:text-red-500'
+                              ? 'text-yellow-600 dark:text-yellow-600'
+                              : 'text-red-600 dark:text-red-600'
                           }`}
                         >
                           {bitacora.resultado}
@@ -494,72 +489,93 @@ const Bitacoras = () => {
               })}
             </div>
 
-            {/* Paginación */}
-            <div className="flex items-center justify-between mt-6">
-              <p className="text-sm text-gray-700 dark:text-gray-300">
-                Mostrando {(currentPage - 1) * itemsPerPage + 1} -{' '}
-                {Math.min(currentPage * itemsPerPage, sortedBitacoras.length)}
-                <br />
-                de {sortedBitacoras.length} bitácoras | Página {currentPage} de {totalPages}
-              </p>
+    {/* Paginación */}
+    <div className="flex flex-wrap md:flex-nowrap items-center justify-between mt-2 gap-2">
+      <p className="text-sm text-gray-700 dark:text-gray-300 text-center w-full md:w-auto">
+        Mostrando {(currentPage - 1) * itemsPerPage + 1} -{' '}
+        {Math.min(currentPage * itemsPerPage, sortedBitacoras.length)}
+        <br />
+        de {sortedBitacoras.length} bitácoras | Página {currentPage} de {totalPages}
+      </p>
+    
+      <nav className="flex flex-wrap md:flex-nowrap items-center gap-1 sm:gap-2 justify-center">
+        {/* Botón ir a primera página */}
+        <button
+          onClick={() => paginate(1)}
+          disabled={currentPage === 1}
+          className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 
+          disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+        >
+          <ChevronsLeft size={20} />
+        </button>
+    
+        {/* Botón ir a página anterior */}
+        <button
+          onClick={() => paginate(currentPage - 1)}
+          disabled={currentPage === 1}
+          className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 
+          disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+        >
+          <ChevronLeft size={20} />
+        </button>
+    
+        {/* Botón ir a página siguiente */}
+        <button
+          onClick={() => paginate(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 
+          disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+        >
+          <ChevronRight size={20} />
+        </button>
+    
+        {/* Botón ir a última página */}
+        <button
+          onClick={() => paginate(totalPages)}
+          disabled={currentPage === totalPages}
+          className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 
+          disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+        >
+          <ChevronsRight size={20} />
+        </button>
+    
+        {/* Input para ir a página específica */}
+        <div className="flex items-center gap-1 sm:gap-2">
+          <input
+            type="number"
+            min="1"
+            max={totalPages}
+            value={goToPage || ''}
+            onChange={(e) => {
+              const value = e.target.value
+              if (
+                value === '' ||
+                (parseInt(value) >= 1 && parseInt(value) <= totalPages)
+              ) {
+                setGoToPage(value)
+              }
+            }}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') {
+                const pageNumber = parseInt(goToPage)
+                if (pageNumber >= 1 && pageNumber <= totalPages) {
+                  paginate(pageNumber)
+                  setGoToPage('')
+                }
+              }
+            }}
+            className="w-10 sm:w-12 text-center border rounded-md bg-gray-100 dark:bg-gray-900 
+            text-black dark:text-white border-gray-300 dark:border-gray-600"
+          />
+          {/* Mostrar el número de la página actual */}
+          <span className="text-sm text-gray-700 dark:text-gray-200">
+            {currentPage} / {totalPages}
+          </span>
+        </div>
+      </nav>
+    </div>
 
-              <nav className="flex items-center gap-2">
-                {/* Botón ir a primera página */}
-                <button
-                  onClick={() => paginate(1)}
-                  disabled={currentPage === 1}
-                  className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
-                >
-                  <ChevronsLeft size={20} />
-                </button>
 
-                {/* Botón ir a página anterior */}
-                <button
-                  onClick={() => paginate(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
-                >
-                  <ChevronLeft size={20} />
-                </button>
-
-                {/* Botón ir a página siguiente */}
-                <button
-                  onClick={() => paginate(currentPage + 1)}
-                  disabled={currentPage === totalPages}
-                  className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
-                >
-                  <ChevronRight size={20} />
-                </button>
-
-                {/* Botón ir a última página */}
-                <button
-                  onClick={() => paginate(totalPages)}
-                  disabled={currentPage === totalPages}
-                  className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
-                >
-                  <ChevronsRight size={20} />
-                </button>
-
-                {/* Input para ir a página específica */}
-                <input
-                  type="number"
-                  min="1"
-                  max={totalPages}
-                  value={goToPage || currentPage}
-                  onChange={(e) => setGoToPage(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      const pageNumber = parseInt(goToPage)
-                      if (pageNumber >= 1 && pageNumber <= totalPages) paginate(pageNumber)
-                    }
-                  }}
-                  className="w-12 text-center border rounded-md bg-gray-100 dark:bg-gray-900 text-black dark:text-white border-gray-300 dark:border-gray-600"
-                />
-
-                {/* Texto "/ totalPages" */}
-                <span className="text-sm text-gray-700 dark:text-gray-200">/ {totalPages}</span>
-              </nav>
-            </div>
           </div>
         </div>
 

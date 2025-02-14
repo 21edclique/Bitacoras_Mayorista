@@ -67,36 +67,39 @@ const Usuarios = () => {
     currentPage * itemsPerPage,
   )
 
-    // Función helper para mostrar el estado formateado
-    const getFormattedStatus = (status: string) => {
-      switch (status) {
-        case 'A':
-          return <span className="text-green-600 dark:text-green-400">Activo</span>
-        case 'I':
-          return <span className="text-red-600 dark:text-red-400">Inactivo</span>
-        default:
-          return status
-      }
+  // Función helper para mostrar el estado formateado
+  const getFormattedStatus = (status: string) => {
+    switch (status) {
+      case 'A':
+        return <span className="text-green-600 dark:text-green-400">Activo</span>
+      case 'I':
+        return <span className="text-red-600 dark:text-red-400">Inactivo</span>
+      default:
+        return status
     }
-  
-    // Función helper para mostrar el rol formateado
-    const getFormattedRole = (role: number) => {
-      switch (role) {
-        case 1:
-          return <span className="font-medium text-blue-600 dark:text-blue-400">Administrador</span>
-        case 2:
-          return <span className="font-medium text-purple-600 dark:text-purple-400">Operador</span>
-        case 3:
-          return <span className="font-medium text-amber-600 dark:text-amber-400">Gerencia</span>
-        default:
-          return role
-      }
+  }
+
+  // Función helper para mostrar el rol formateado
+  const getFormattedRole = (role: number) => {
+    switch (role) {
+      case 1:
+        return (
+          <span className="font-medium text-blue-600 dark:text-blue-400">Administrador</span>
+        )
+      case 2:
+        return (
+          <span className="font-medium text-purple-600 dark:text-purple-400">Operador</span>
+        )
+      case 3:
+        return <span className="font-medium text-amber-600 dark:text-amber-400">Gerencia</span>
+      default:
+        return role
     }
-  
+  }
 
   return (
-    <main className="ml-10 mt-10 p-10 dark:bg-gray-900 dark:text-gray-200 transition-colors duration-300">
-      <div className="container mx-auto p-4">
+    <main className="p-2 sm:p-2 md:p-1 lg:p-2 dark:bg-gray-900 dark:text-gray-200">
+      <div className="container mx-auto p-10">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6">
           {/* Encabezado */}
           <div className="flex justify-between items-center mb-6">
@@ -172,13 +175,13 @@ const Usuarios = () => {
                       Estado:
                     </span>
                     <span className="ml-2 text-gray-900 dark:text-gray-100">
-                    {getFormattedStatus(usuario.estado)}
+                      {getFormattedStatus(usuario.estado)}
                     </span>
                   </div>
                   <div className="md:col-span-2 lg:col-span-3">
                     <span className="font-semibold text-gray-600 dark:text-gray-300">Rol:</span>
                     <span className="ml-2 text-gray-900 dark:text-gray-100">
-                    {getFormattedRole(usuario.id_rol_per)}
+                      {getFormattedRole(usuario.id_rol_per)}
                     </span>
                   </div>
                   <div>
@@ -213,72 +216,94 @@ const Usuarios = () => {
             ))}
           </div>
 
-          {/* Paginación */}
-          <div className="flex items-center justify-between mt-6">
-            <p className="text-sm text-gray-700 dark:text-gray-300">
-              Mostrando {(currentPage - 1) * itemsPerPage + 1} -{' '}
-              {Math.min(currentPage * itemsPerPage, sortedUsuarios.length)}
-              <br />
-              de {sortedUsuarios.length} usuarios | Página {currentPage} de {totalPages}
-            </p>
+    {/* Paginación */}
+<div className="flex flex-wrap md:flex-nowrap items-center justify-between mt-2 gap-2">
+  <p className="text-sm text-gray-700 dark:text-gray-300 text-center w-full md:w-auto">
+    Mostrando {(currentPage - 1) * itemsPerPage + 1} -{' '}
+    {Math.min(currentPage * itemsPerPage, sortedUsuarios.length)}
+    <br />
+    de {sortedUsuarios.length} bitácoras | Página {currentPage} de {totalPages}
+  </p>
 
-            <nav className="flex items-center gap-2">
-              {/* Botón ir a primera página */}
-              <button
-                onClick={() => paginate(1)}
-                disabled={currentPage === 1}
-                className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
-              >
-                <ChevronsLeft size={20} />
-              </button>
+  <nav className="flex flex-wrap md:flex-nowrap items-center gap-1 sm:gap-2 justify-center">
+    {/* Botón ir a primera página */}
+    <button
+      onClick={() => paginate(1)}
+      disabled={currentPage === 1}
+      className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 
+      disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+    >
+      <ChevronsLeft size={20} />
+    </button>
 
-              {/* Botón ir a página anterior */}
-              <button
-                onClick={() => paginate(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
-              >
-                <ChevronLeft size={20} />
-              </button>
+    {/* Botón ir a página anterior */}
+    <button
+      onClick={() => paginate(currentPage - 1)}
+      disabled={currentPage === 1}
+      className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 
+      disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+    >
+      <ChevronLeft size={20} />
+    </button>
 
-              {/* Botón ir a página siguiente */}
-              <button
-                onClick={() => paginate(currentPage + 1)}
-                disabled={currentPage === totalPages}
-                className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
-              >
-                <ChevronRight size={20} />
-              </button>
+    {/* Botón ir a página siguiente */}
+    <button
+      onClick={() => paginate(currentPage + 1)}
+      disabled={currentPage === totalPages}
+      className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 
+      disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+    >
+      <ChevronRight size={20} />
+    </button>
 
-              {/* Botón ir a última página */}
-              <button
-                onClick={() => paginate(totalPages)}
-                disabled={currentPage === totalPages}
-                className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
-              >
-                <ChevronsRight size={20} />
-              </button>
+    {/* Botón ir a última página */}
+    <button
+      onClick={() => paginate(totalPages)}
+      disabled={currentPage === totalPages}
+      className="p-2 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700 
+      disabled:opacity-50 disabled:cursor-not-allowed rounded-md"
+    >
+      <ChevronsRight size={20} />
+    </button>
 
-              {/* Input para ir a página específica */}
-              <input
-                type="number"
-                min="1"
-                max={totalPages}
-                value={goToPage || currentPage}
-                onChange={(e) => setGoToPage(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    const pageNumber = parseInt(goToPage)
-                    if (pageNumber >= 1 && pageNumber <= totalPages) paginate(pageNumber)
-                  }
-                }}
-                className="w-12 text-center border rounded-md bg-gray-100 dark:bg-gray-900 text-black dark:text-white border-gray-300 dark:border-gray-600"
-              />
+    {/* Input para ir a página específica */}
+    <div className="flex items-center gap-1 sm:gap-2">
+      <input
+        type="number"
+        min="1"
+        max={totalPages}
+        value={goToPage || ''}
+        onChange={(e) => {
+          const value = e.target.value
+          if (
+            value === '' ||
+            (parseInt(value) >= 1 && parseInt(value) <= totalPages)
+          ) {
+            setGoToPage(value)
+          }
+        }}
+        onKeyPress={(e) => {
+          if (e.key === 'Enter') {
+            const pageNumber = parseInt(goToPage)
+            if (pageNumber >= 1 && pageNumber <= totalPages) {
+              paginate(pageNumber)
+              setGoToPage('')
+            }
+          }
+        }}
+        className="w-10 sm:w-12 text-center border rounded-md bg-gray-100 dark:bg-gray-900 
+        text-black dark:text-white border-gray-300 dark:border-gray-600"
+      />
+      {/* Mostrar el número de la página actual */}
+      <span className="text-sm text-gray-700 dark:text-gray-200">
+        {currentPage} / {totalPages}
+      </span>
+    </div>
+  </nav>
+</div>
 
-              {/* Texto "/ totalPages" */}
-              <span className="text-sm text-gray-700 dark:text-gray-200">/ {totalPages}</span>
-            </nav>
-          </div>
+
+
         </div>
       </div>
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"; 
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FcKindle, FcBusinessman, FcStatistics } from "react-icons/fc";
 import { FiX } from "react-icons/fi";
@@ -8,13 +8,14 @@ interface SidebarItemProps {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   collapsed?: boolean;
-  isActive: boolean; // Nuevo prop para detectar si es la página activa
+  isActive: boolean;
 }
 
 interface SidebarProps {
   userData: { id_rol_per: number } | null;
   isOpen: boolean; // Controla si el sidebar está abierto o cerrado
   toggleSidebar: () => void; // Función para abrir/cerrar el sidebar
+  isMobile:boolean;
 }
 
 const SidebarItem: React.FC<SidebarItemProps> = ({ to, icon: Icon, label, collapsed, isActive }) => (
@@ -33,12 +34,12 @@ const SidebarItem: React.FC<SidebarItemProps> = ({ to, icon: Icon, label, collap
 );
 
 const Sidebar: React.FC<SidebarProps> = ({ userData, isOpen, toggleSidebar }) => {
-  const location = useLocation(); // Obtener la página actual
-  const [isCollapsed, setIsCollapsed] = useState(window.innerWidth < 768);
+  const location = useLocation();
+  const [isCollapsed, setIsCollapsed] = useState(window.innerWidth < 1024);
 
   useEffect(() => {
     const handleResize = () => {
-      setIsCollapsed(window.innerWidth < 768);
+      setIsCollapsed(window.innerWidth < 1024);
     };
 
     window.addEventListener("resize", handleResize);
@@ -51,7 +52,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userData, isOpen, toggleSidebar }) =>
       {isOpen && (
         <button
           onClick={toggleSidebar}
-          className="fixed top-4 left-4 z-50 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 md:hidden"
+          className="fixed top-4 left-4 z-50 p-2 rounded-lg bg-gray-100 dark:bg-gray-800 lg:hidden"
           aria-label="Cerrar menú"
         >
           <FiX className="w-6 h-6 text-gray-600 dark:text-gray-300" />
@@ -62,7 +63,7 @@ const Sidebar: React.FC<SidebarProps> = ({ userData, isOpen, toggleSidebar }) =>
       <aside
         className={`fixed top-0 left-0 h-screen pt-20 bg-white dark:bg-gray-900 dark:border-gray-700 transition-all duration-300
           ${isCollapsed ? "w-20" : "w-72"}
-          ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
+          ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}
       >
         <div className="h-full px-2 pb-6 overflow-y-auto bg-white dark:bg-gray-900">
           <ul className="space-y-4 font-medium">

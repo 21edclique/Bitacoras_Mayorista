@@ -12,7 +12,7 @@ type ModalBitacorasProps = {
     id_usuario_per: string
     hora: string
     id_camara: string
-    id_nave_per: string
+    id_nave_per: number
     camara: string
     novedad: string
     resultado: string
@@ -177,7 +177,7 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
   useEffect(() => {
     const now = new Date()
     const date = now.toISOString().split('T')[0]
-    const time = now.toTimeString().split(' ')[0].substring(0, 5)
+    const time = now.toTimeString().split(' ')[0].substring(0)
     const userData = JSON.parse(localStorage.getItem('userData') || '{}')
 
     // Asignar fecha y hora solo si no están definidas
@@ -238,8 +238,8 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
   }
 
   return (
-    <div className="fixed inset-20 z-50 overflow-y-auto">
-      <div className="flex min-h-screen items-end justify-center px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+    <div className="fixed inset-0 z-50 overflow-y-auto">
+      <div className="flex min-h-full items-center justify-center p-4 text-center sm:block sm:p-0">
         <div className="fixed inset-0 bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 transition-opacity" />
 
         <div className="inline-block w-full max-w-2xl transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 text-left align-bottom shadow-xl transition-all">
@@ -274,7 +274,6 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
                     readOnly
                   />
                 </InputWrapper>
-
                 <InputWrapper>
                   <Label htmlFor="hora">Hora</Label>
                   <Input
@@ -282,14 +281,13 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
                     id="hora"
                     name="hora"
                     value={
-                      formData.hora || new Date().toTimeString().split(' ')[0].substring(0, 5)
+                      formData.hora 
                     }
                     onChange={handleInputChange}
                     required
                     readOnly
                   />
                 </InputWrapper>
-
                 <InputWrapper>
                   <Label htmlFor="usuario">Usuario</Label>
                   <Input
@@ -339,7 +337,7 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
                     name="id_nave_per"
                     value={formData.id_nave_per}
                     onChange={handleInputChange}
-                    // required
+                    required
                     disabled={naveLoading || isFieldDisabled('nave')}
                   >
                     <option value="">Seleccione una nave</option>
@@ -358,6 +356,7 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
                     name="camara"
                     value={formData.camara || ''} // Convertir siempre a string
                     onChange={handleInputChange}
+                    required
                     disabled={camaraLoading || !formData.id_nave_per || isFieldDisabled('nave')}
                   >
                     <option value="">Seleccione una Cámara</option>
@@ -396,6 +395,7 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
                   value={formData.novedad}
                   onChange={handleInputChange}
                   required
+                  maxLength={5000}
                 />
               </InputWrapper>
 
@@ -425,6 +425,7 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
                     value={formData.referencia}
                     onChange={handleInputChange}
                     required
+                    maxLength={244}
                   />
                 </InputWrapper>
               </div>

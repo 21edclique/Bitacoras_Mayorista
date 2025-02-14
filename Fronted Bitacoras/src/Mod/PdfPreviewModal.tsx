@@ -82,8 +82,10 @@ const PdfPreviewModal: React.FC<PdfPreviewModalProps> = ({
                   </p>
                   {/* Mostrar el nombre del colega debajo si existe */}
                   {selectedBitacora.nombre_colega && (
+
+                    
                     <p>{selectedBitacora.nombre_colega}</p>
-                  )}
+                  )} 
                   <p>
                     <span className="font-bold">Para:</span> Ing. Jorge Chicaiza (Analista TIC)
                   </p>
