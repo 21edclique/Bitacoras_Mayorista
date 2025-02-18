@@ -306,10 +306,10 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
                   />
                 </InputWrapper>
                 <InputWrapper>
-                  <Label htmlFor="acompañante">Acompañante</Label>
+                  <Label htmlFor="usuario2">Usuario 2</Label>
                   <Select
-                    id="acompañante"
-                    name="acompañante"
+                    id="usuario2"
+                    name="usuario2"
                     value={formData.id_colega || ''}
                     onChange={(e) => {
                       handleInputChange({
@@ -319,9 +319,9 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
                         },
                       } as React.ChangeEvent<HTMLInputElement>)
                     }}
-                    disabled={isFieldDisabled('acompañante')}
+                    disabled={isFieldDisabled('usuario2')}
                   >
-                    <option value="">Seleccione un compañero</option>
+                    <option value="">Seleccione un segundo usuario</option>
                     {usuarios.map((usuario) => (
                       <option key={usuario.id_usuario} value={usuario.id_usuario}>
                         {usuario.nombres}
@@ -337,7 +337,7 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
                     name="id_nave_per"
                     value={formData.id_nave_per}
                     onChange={handleInputChange}
-                    required
+                    // required
                     disabled={naveLoading || isFieldDisabled('nave')}
                   >
                     <option value="">Seleccione una nave</option>
@@ -356,7 +356,7 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
                     name="camara"
                     value={formData.camara || ''} // Convertir siempre a string
                     onChange={handleInputChange}
-                    required
+                    // required
                     disabled={camaraLoading || !formData.id_nave_per || isFieldDisabled('nave')}
                   >
                     <option value="">Seleccione una Cámara</option>
