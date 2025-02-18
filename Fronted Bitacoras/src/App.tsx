@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'
+import { HashRouter as Router, Route, Routes, Navigate } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Sidebar from './components/Sidebar'
 import Home from './pages/Home'
@@ -40,7 +40,7 @@ const App: React.FC = () => {
     localStorage.removeItem('userData')
     setUserData(null)
     setToken(null)
-    window.location.href = '/login'
+    window.location.href = '/'
   }, [])
 
   // Si no hay token, redirigir al login
@@ -49,10 +49,10 @@ const App: React.FC = () => {
       <Router>
         <Routes>
           <Route
-            path="/login"
+            path="/"
             element={<Login setUserData={setUserData} setToken={setToken} />}
           />
-          <Route path="*" element={<Navigate to="/login" />} />
+          <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Router>
     )
