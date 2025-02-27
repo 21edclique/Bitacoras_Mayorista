@@ -35,6 +35,13 @@ const PdfPreviewModal: React.FC<PdfPreviewModalProps> = ({
   const year = new Date(selectedBitacora.fecha).getFullYear()
   const bitacoraId = selectedBitacora.id_bitacora // Reemplázalo con el ID dinámico de la bitácora
 
+  const bitacoraDate = new Date(
+    `${selectedBitacora.fecha.split('T')[0]}T${selectedBitacora.hora}`,
+  )
+  const currentDate = new Date()
+  const timeDifference = currentDate.getTime() - bitacoraDate.getTime()
+  const hoursDifference = timeDifference / (1000 * 60 * 60);
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 dark:bg-opacity-70">
       <div className="flex min-h-screen items-center justify-center p-4">
@@ -78,14 +85,10 @@ const PdfPreviewModal: React.FC<PdfPreviewModalProps> = ({
                     <span className="font-bold">Fecha:</span> {formattedFecha}
                   </p>
                   <p>
-                    <span className="font-bold">De:</span> {selectedBitacora.nombres}
+                    <span className="font-bold">De:</span> {selectedBitacora.nombres }
                   </p>
                   {/* Mostrar el nombre del colega debajo si existe */}
-                  {selectedBitacora.nombre_colega && (
-
-                    
-                    <p>{selectedBitacora.nombre_colega}</p>
-                  )} 
+                  {selectedBitacora.nombre_colega && <p>{selectedBitacora.nombre_colega }</p>}
                   <p>
                     <span className="font-bold">Para:</span> Ing. Jorge Chicaiza (Analista TIC)
                   </p>
@@ -128,6 +131,9 @@ const PdfPreviewModal: React.FC<PdfPreviewModalProps> = ({
                   <span className="font-bold">Resultado:</span> {selectedBitacora.resultado}
                 </p>
               </div>
+              <br />
+              <br />
+              <br />
 
               {/* Signature */}
               <div className="mt-12 text-center space-y-2">
@@ -149,6 +155,16 @@ const PdfPreviewModal: React.FC<PdfPreviewModalProps> = ({
                   )}
                 </div>
               </div>
+
+              {/* Pie de página adicional si han pasado más de 2 minutos */}
+              {hoursDifference > 9 && (
+                <div className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
+                  <p>
+                    EP-EMA-OPERVIG-{year}-{bitacoraId}
+                  </p>
+                  <p>Validado</p>
+                </div>
+              )}
             </div>
           </div>
 

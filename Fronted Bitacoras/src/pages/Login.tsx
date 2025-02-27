@@ -45,7 +45,7 @@ const Login: React.FC<LoginProps> = ({ setUserData, setToken }) => {
           <div className="w-full xl:w-1/2 xl:border-l-2 border-gray-300 dark:border-gray-700">
             <div className="w-full p-6 sm:p-12">
               <h2 className="mb-8 text-3xl md:text-5xl font-bold text-gray-900 dark:text-gray-100 text-center xl:block hidden">
-                Ingreso al Sistema de Bitacoras
+              Ingreso al Sistema de Bitácoras
               </h2>
 
               <form onSubmit={(e) => handleSubmit(e).then(handleLoginSuccess)} className="max-w-md mx-auto">

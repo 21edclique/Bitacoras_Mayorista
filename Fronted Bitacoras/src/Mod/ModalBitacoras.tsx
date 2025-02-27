@@ -126,7 +126,7 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
   // Obtener el nombre del usuario original en modo de edición
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('userData') || '{}')
-    // console.log(userData);
+
     setUserRole(userData.id_rol_per || 0)
     if (!editMode && !formData.id_usuario_per) {
       handleInputChange({
@@ -135,17 +135,19 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
     }
   }, [formData.id_usuario_per, editMode])
 
-  const hasRestrictedAccess = editMode && userRole !== 1
-
+ 
   const isFieldDisabled = (fieldName: string): boolean => {
-    // Only apply restrictions if we're in edit mode
-    if (!editMode) return false
-
-    // If user is admin, no restrictions
-    if (userRole === 1) return false
-
-    // In edit mode for non-admin users, restrict certain fields
-    return hasRestrictedAccess
+    // Si no está en modo edición, nada está deshabilitado
+    if (!editMode) return false;
+    
+    // Siempre bloquear el campo de Usuario 2 (acompañante) en modo edición para todos
+    if (fieldName === 'acompañante') return true;
+    
+    // Para los demás campos, solo están bloqueados para no administradores
+    if (userRole === 1) return false;
+    
+    // Para usuarios no administradores, bloquear otros campos
+    return true;
   }
 
   useEffect(() => {
@@ -170,7 +172,7 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
 
   useEffect(() => {
     if (editMode) {
-      console.log('🟡 Datos de formData al abrir en edición:', formData)
+      //console.log('🟡 Datos de formData al abrir en edición:', formData)
     }
   }, [editMode, formData])
 
@@ -201,6 +203,14 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
     }
   }, [formData.fecha, formData.hora, formData.id_usuario_per, editMode])
 
+  const handleColegaChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    handleInputChange({
+      target: {
+        name: 'id_colega',
+        value: e.target.value,
+      },
+    } as React.ChangeEvent<HTMLInputElement>)
+  }
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
@@ -217,7 +227,7 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
   if (!showForm) return null
 
   const getUserDisplayName = () => {
-    console.log('🔵 ID en formData.id_usuario_per:', formData.id_usuario_per)
+    // console.log('🔵 ID en formData.id_usuario_per:', formData.id_usuario_per)
 
     if (editMode && formData.id_usuario_per) {
       // Buscar el usuario en la lista de usuarios
@@ -236,6 +246,8 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
     const userData = JSON.parse(localStorage.getItem('userData') || '{}')
     return userData.nombres || 'Usuario desconocido'
   }
+  console.log(isFieldDisabled('acompañante'))
+  console.log('Valor de id_colega:', formData.id_colega)
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
@@ -280,9 +292,7 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
                     type="time"
                     id="hora"
                     name="hora"
-                    value={
-                      formData.hora 
-                    }
+                    value={formData.hora}
                     onChange={handleInputChange}
                     required
                     readOnly
@@ -305,68 +315,70 @@ const ModalBitacoras: React.FC<ModalBitacorasProps> = ({
                     readOnly={editMode}
                   />
                 </InputWrapper>
-                <InputWrapper>
-                  <Label htmlFor="usuario2">Usuario 2</Label>
-                  <Select
-                    id="usuario2"
-                    name="usuario2"
-                    value={formData.id_colega || ''}
-                    onChange={(e) => {
-                      handleInputChange({
-                        target: {
-                          name: 'id_colega',
-                          value: e.target.value,
-                        },
-                      } as React.ChangeEvent<HTMLInputElement>)
-                    }}
-                    disabled={isFieldDisabled('usuario2')}
-                  >
-                    <option value="">Seleccione un segundo usuario</option>
-                    {usuarios.map((usuario) => (
-                      <option key={usuario.id_usuario} value={usuario.id_usuario}>
-                        {usuario.nombres}
-                      </option>
-                    ))}
-                  </Select>
-                </InputWrapper>
+                
+        <InputWrapper>
+          <Label htmlFor="acompañante">Usuario 2</Label>
+          <Select
+            id="acompañante"
+            name="id_colega"
+            value={formData.id_colega || ''}
+            onChange={handleColegaChange}
+            disabled={isFieldDisabled('acompañante')}
+          >
+            <option value="">Seleccione un segundo usuario</option>
+            {usuarios.map((usuario) => (
+              <option key={usuario.id_usuario} value={usuario.id_usuario.toString()}>
+                {usuario.nombres}
+              </option>
+            ))}
+          </Select>
+        </InputWrapper>
 
-                <InputWrapper>
-                  <Label htmlFor="nave">Nave</Label>
-                  <Select
-                    id="nave"
-                    name="id_nave_per"
-                    value={formData.id_nave_per}
-                    onChange={handleInputChange}
-                    // required
-                    disabled={naveLoading || isFieldDisabled('nave')}
-                  >
-                    <option value="">Seleccione una nave</option>
-                    {naveData.map((nave) => (
-                      <option key={nave.id_nave} value={nave.id_nave}>
-                        {nave.nombre} - Sector {nave.sector}
-                      </option>
-                    ))}
-                  </Select>
-                </InputWrapper>
+        <InputWrapper>
+          <Label htmlFor="nave">Nave</Label>
+          <Select
+            id="nave"
+            name="id_nave_per"
+            value={formData.id_nave_per}
+            onChange={(e) => {
+              handleInputChange(e)
+              // Reset camera when changing nave
+              handleInputChange({
+                target: {
+                  name: 'camara',
+                  value: '',
+                },
+              } as React.ChangeEvent<HTMLInputElement>)
+            }}
+            required
+            disabled={naveLoading || isFieldDisabled('nave')}
+          >
+            <option value="">Seleccione una nave</option>
+            {naveData.map((nave) => (
+              <option key={nave.id_nave} value={nave.id_nave}>
+                {nave.nombre} - Sector {nave.sector}
+              </option>
+            ))}
+          </Select>
+        </InputWrapper>
 
-                <InputWrapper>
-                  <Label htmlFor="camara">Cámara</Label>
-                  <Select
-                    id="camara"
-                    name="camara"
-                    value={formData.camara || ''} // Convertir siempre a string
-                    onChange={handleInputChange}
-                    // required
-                    disabled={camaraLoading || !formData.id_nave_per || isFieldDisabled('nave')}
-                  >
-                    <option value="">Seleccione una Cámara</option>
-                    {filteredCamaras.map((camara) => (
-                      <option key={camara.id_camara} value={camara.nombre}>
-                        {camara.nombre}
-                      </option>
-                    ))}
-                  </Select>
-                </InputWrapper>
+        <InputWrapper>
+          <Label htmlFor="camara">Cámara</Label>
+          <Select
+            id="camara"
+            name="camara"
+            value={formData.camara || ''}
+            onChange={handleInputChange}
+            disabled={camaraLoading || !formData.id_nave_per || isFieldDisabled('nave')}
+          >
+            <option value="">Seleccione una Cámara</option>
+            {filteredCamaras.map((camara) => (
+              <option key={camara.id_camara} value={camara.nombre}>
+                {camara.nombre}
+              </option>
+            ))}
+          </Select>
+        </InputWrapper>
 
                 <InputWrapper>
                   <Label htmlFor="turno">Turno</Label>
