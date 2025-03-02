@@ -286,18 +286,7 @@ const Bitacoras = () => {
                                   <Edit2 size={18} />
                                 </IconButton>
                               )}
-                              {bitacora.resultado !== 'Resuelto' && (
-                                <IconButton
-                                  onClick={() => handleResolveBitacora(bitacora.id_bitacora)}
-                                  color="default"
-                                  ariaLabel="Marcar como resuelto"
-                                >
-                                  <Square
-                                    size={18}
-                                    className="text-gray-600 hover:text-green-600 dark:text-gray-300 dark:hover:text-green-500"
-                                  />
-                                </IconButton>
-                              )}
+                           
                             </div>
                           )}
                         </div>
